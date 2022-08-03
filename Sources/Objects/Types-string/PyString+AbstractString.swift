@@ -26,6 +26,7 @@ public extension String {
         tagger.string = self
 
         // enumerate linguistic tags in string
+        if #available(iOS 11.0,*) {
         tagger.enumerateTags(in: range, unit: .word, scheme: .lexicalClass, options: []) { tag, tokenRange, _ in
             let word = self[tokenRange]
 
@@ -42,6 +43,8 @@ public extension String {
                 newStr.append(contentsOf: word.localizedCapitalized)
             }
         }
+        }
+        else {fatalError();} //no ios 11
         return newStr
     }
 }
