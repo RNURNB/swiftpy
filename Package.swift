@@ -22,8 +22,6 @@ let products: [Product] = [
   // Pretty printer based on Philip Wadler idea:
   // https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
   .library(name: "Rapunzel", targets: ["Rapunzel"])
-  .library(name: "VioletCore", targets: ["VioletCore"])
-  .library(name: "BigInt", targets: ["BigInt"])
 ]
 
 // ====================
