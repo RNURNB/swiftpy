@@ -1,4 +1,4 @@
-import ArgumentParser
+//import ArgumentParser
 
 // swiftlint:disable let_var_whitespace
 // cSpell:ignore wstrlist
@@ -13,8 +13,26 @@ import ArgumentParser
 // Swift refuses to accept "a" + "b" for 'ExpressibleByStringInterpolation'.
 // And we want to honor our 80 columns per line limit.
 // Solution: Manually create 'ArgumentHelp' if we have longer string.
+
+class ArgumentHelp {
+    let help: String
+    public init(stringLiteral: String) {
+        help=stringLiteral
+    }
+}
+
 private func concat(_ values: String...) -> ArgumentHelp {
   return ArgumentHelp(stringLiteral: values.joined())
+}
+
+struct CommandConfiguration {
+    var commandName: String
+    var abstract: String
+    var discussion: String
+    var helpNames: [String]
+}
+
+protocol ParsableCommand {
 }
 
 internal struct ArgumentBinding: ParsableCommand {
@@ -36,14 +54,14 @@ internal struct ArgumentBinding: ParsableCommand {
   ///
   /// Display available options.
   /// Overrides `ArgumentParser` help.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.short,
       NameSpecification.Element.long,
       NameSpecification.Element.customLong("help", withSingleDash: true)
     ],
     help: "print this help message and exit (also --help)"
-  )
+  )*/
   internal var help = false
 
   /// `-V --version`
@@ -53,31 +71,31 @@ internal struct ArgumentBinding: ParsableCommand {
   ///
   /// Please note that `-v` is for `verbose`!
   /// Version uses `-V`!
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customShort("V"),
       NameSpecification.Element.long
     ],
     help: "print the Python version number and exit (also --version)"
-  )
+  )*/
   internal var version = false
 
   /// `-d`
   ///
   ///  Turn on debugging output.
-  @Flag(
+  /*@Flag(
     name: NameSpecification.short,
     help: "debug output messages; also PYTHONDEBUG=x"
-  )
+  )*/
   internal var debug = false
 
   /// `-q`
   ///
   ///  Don’t display the copyright and version messages even in interactive mode.
-  @Flag(
+  /*@Flag(
     name: NameSpecification.short,
     help: "don't print version and copyright messages on interactive startup"
-  )
+  )*/
   internal var quiet = false
 
   /// `-i`
@@ -85,23 +103,23 @@ internal struct ArgumentBinding: ParsableCommand {
   /// When a script is passed as first argument or the `-c` option is used,
   /// enter interactive mode after executing the script or the command,
   /// even when `sys.stdin` does not appear to be a terminal.
-  @Flag(
+  /*@Flag(
     name: NameSpecification.short,
     help: concat(
       "inspect interactively after running script; forces a prompt even ",
       "if stdin does not appear to be a terminal; also PYTHONINSPECT=x"
     )
-  )
+  )*/
   internal var inspectInteractively = false
 
   /// `-E`
   ///
   /// Ignore all `PYTHON*` environment variables,
   /// e.g. `PYTHONPATH` and `PYTHONHOME`, that might be set.
-   @Flag(
+  /* @Flag(
      name: NameSpecification.customShort("E"),
      help: "ignore PYTHON* environment variables (such as PYTHONPATH)"
-   )
+   )*/
   internal var ignoreEnvironment = false
 
   /// `-I`
@@ -110,14 +128,14 @@ internal struct ArgumentBinding: ParsableCommand {
   /// In isolated mode `sys.path` contains neither the script’s directory
   /// nor the user’s site-packages directory.
   /// All `PYTHON*` environment variables are ignored, too.
-  @Flag(
+  /*@Flag(
     name: NameSpecification.customShort("I"),
     help: "isolate Violet from the user's environment (implies -E)"
-  )
+  )*/
   internal var isolated = false
 
   /// `-v`
-  @Flag(
+  /*@Flag(
     name: NameSpecification.short,
     help: concat(
       "Print a message each time a module is initialized, ",
@@ -126,85 +144,85 @@ internal struct ArgumentBinding: ParsableCommand {
       "for when searching for a module. Also provides information on module ",
       "cleanup at exit. See also PYTHONVERBOSE."
     )
-  )
-  internal var verbose: Int
+  )*/
+  internal var verbose: Int=0
 
   // MARK: - Optimization
 
   /// `-O`
-  @Flag(
+  /*@Flag(
     name: NameSpecification.customShort("O"),
     help: "remove assert and __debug__-dependent statements; also PYTHONOPTIMIZE=x"
-  )
+  )*/
   internal var optimize1 = false // Do not use 'Int'. '-O and -OO' are separate options
 
   /// `-OO`
-  @Flag(
+  /*@Flag(
     name: NameSpecification.customLong("OO", withSingleDash: true),
     help: "do -O changes and also discard docstrings (overrides '-O' if it is also set)"
-  )
+  )*/
   internal var optimize2 = false // Do not use 'Int'. '-O and -OO' are separate options
 
   // MARK: - Warnings
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Wdefault", withSingleDash: true),
       NameSpecification.Element.customLong("Wd", withSingleDash: true)
     ],
     help: "warning control; warn once per call location; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wDefault = false
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Werror", withSingleDash: true),
       NameSpecification.Element.customLong("We", withSingleDash: true)
     ],
     help: "warning control; convert to exceptions; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wError = false
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Walways", withSingleDash: true),
       NameSpecification.Element.customLong("Wa", withSingleDash: true)
     ],
     help: "warning control; warn every time; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wAlways = false
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Wmodule", withSingleDash: true),
       NameSpecification.Element.customLong("Wm", withSingleDash: true)
     ],
     help: "warning control; warn once per calling module; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wModule = false
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Wonce", withSingleDash: true),
       NameSpecification.Element.customLong("Wo", withSingleDash: true)
     ],
     help: "warning control; warn once per Python process; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wOnce = false
 
   /// Warning control.
-  @Flag(
+  /*@Flag(
     name: [
       NameSpecification.Element.customLong("Wignore", withSingleDash: true),
       NameSpecification.Element.customLong("Wi", withSingleDash: true)
     ],
     help: "warning control; never warn; also PYTHONWARNINGS=arg"
-  )
+  )*/
   internal var wIgnore = false
 
   // MARK: - Bytes warning
@@ -213,14 +231,14 @@ internal struct ArgumentBinding: ParsableCommand {
   ///
   /// Issue a warning when comparing `bytes` or `bytearray` with `str`
   /// or bytes with int.
-  @Flag(
+  /*@Flag(
     name: NameSpecification.customShort("b"),
     help: concat(
       "issue warning about str(bytes_instance), str(bytearray_instance) ",
       "and comparing bytes/bytearray with str."
     )
-  )
-  internal var bytesWarning: Int
+  )*/
+  internal var bytesWarning: Int=0
 
   // MARK: Command, module, script
 
@@ -232,21 +250,21 @@ internal struct ArgumentBinding: ParsableCommand {
   ///
   /// We need to add '\n' just as in
   /// pymain_parse_cmdline_impl(_PyMain *pymain, _PyCoreConfig *config, ...)
-  @Option(
+  /*@Option(
     name: NameSpecification.short,
     help: "program passed in as string (terminates option list)"
-  )
-  internal var command: String?
+  )*/
+  internal var command: String?=nil
 
   /// `-m <module-name>`
   ///
   /// Search sys.path for the named module and execute its contents
   /// as the `__main__` module.
-   @Option(
+  /* @Option(
      name: NameSpecification.short,
      help: "run library module as a script (terminates option list)"
-   )
-  internal var module: String?
+   )*/
+  internal var module: String?=nil
 
   /// `<script>`
   ///
@@ -254,10 +272,10 @@ internal struct ArgumentBinding: ParsableCommand {
   /// which must be a filesystem path (absolute or relative)
   /// referring to either a Python file,
   /// or a directory containing a `__main__.py` file.
-  @Argument(
+  /*@Argument(
     help: "execute the code contained in script (terminates option list)"
-  )
-  internal var script: String?
+  )*/
+  internal var script: String?=nil
 
   // MARK: - Init
 

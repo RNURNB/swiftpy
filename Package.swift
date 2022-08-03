@@ -22,8 +22,8 @@ let products: [Product] = [
   .library(name: "VioletCompiler", targets: ["VioletCompiler"]),
   .library(name: "VioletBytecode", targets: ["VioletBytecode"]),
   //.library(name: "UnicodeData", targets: ["UnicodeData"]),
-  //.library(name: "VioletObjects", targets: ["VioletObjects"]),
-  //.library(name: "VioletVM", targets: ["VioletVM"]),
+  .library(name: "VioletObjects", targets: ["VioletObjects"]),
+  .library(name: "VioletVM", targets: ["VioletVM"]),
 
   // Code generation tool used for AST and bytecode.
   .executable(name: "Elsa", targets: ["Elsa"]),
@@ -96,7 +96,7 @@ let targets: [Target] = [
   // Which means that technically we could create PyObjects during compilation
   // to avoid costly translation 'Swift types' -> 'Python types' later.
   // But this is not done.
-  .target(name: "VioletObjects", dependencies: ["VioletBytecode", "ArgumentParser", "UnicodeData", "FileSystem"], path: "Sources/Objects"),
+  .target(name: "VioletObjects", dependencies: ["VioletBytecode", "FileSystem"], path: "Sources/Objects"),
   .testTarget(name: "VioletObjectsTests", dependencies: ["VioletObjects"], path: "Tests/ObjectsTests"),
 
   // Bytecode interpretation (+ remaining part of the Python runtime).

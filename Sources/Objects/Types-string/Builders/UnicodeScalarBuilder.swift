@@ -1,4 +1,5 @@
-import UnicodeData
+//import UnicodeData
+
 
 internal struct UnicodeScalarBuilder: StringBuilderType {
 
@@ -6,6 +7,7 @@ internal struct UnicodeScalarBuilder: StringBuilderType {
   internal typealias Element = UnicodeScalar
   internal typealias CaseMapping = UnicodeData.CaseMapping
   internal typealias Result = String
+//typealias CaseMapping=String
 
   private var scalars: String.UnicodeScalarView
 
@@ -46,10 +48,13 @@ internal struct UnicodeScalarBuilder: StringBuilderType {
   }
 
   internal mutating func append(mapping: UnicodeData.CaseMapping) {
-    self.scalars.append(contentsOf: mapping)
+    //let s=Unicode.Scalar(mapping)!
+    //let s:[Unicode.Scalar]=mapping
+    self.scalars.append(contentsOf: mapping.unicodeScalars)
   }
 
   internal func finalize() -> Result {
     return String(self.scalars)
   }
 }
+

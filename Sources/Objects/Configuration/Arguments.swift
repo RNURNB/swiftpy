@@ -1,4 +1,4 @@
-import ArgumentParser
+//import ArgumentParser
 import FileSystem
 import VioletCore
 
@@ -168,7 +168,7 @@ public struct Arguments {
   /// Parse specified command line arguments.
   public init(from arguments: [String]) throws {
     self.raw = arguments
-
+/* RN
     let argumentsWithoutProgramName = Array(arguments.dropFirst())
     let binding = try ArgumentBinding.parse(argumentsWithoutProgramName)
 
@@ -203,6 +203,7 @@ public struct Arguments {
     self.command = binding.command.map { $0 + "\n" }
     self.module = binding.module
     self.script = binding.script.map(Path.init(string:))
+*/
   }
 
   private mutating func appendWarning(flag: Bool, warning: WarningOption) {
@@ -235,7 +236,7 @@ public struct Arguments {
 
   /// Message printed after providing help flag (`-h -help --help`).
   public static func helpMessage(columns: Int? = nil) -> String {
-    var result = ArgumentBinding.helpMessage(columns: columns)
+    var result = "" //ArgumentBinding.helpMessage(columns: columns)
 
     // 'ArgumentParser' has tendency to add ' ' before new line.
     // (Which is ugly and messes unit tests for people who have

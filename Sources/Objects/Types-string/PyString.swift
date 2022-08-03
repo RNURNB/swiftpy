@@ -1,5 +1,5 @@
 import BigInt
-import UnicodeData
+//import UnicodeData
 import VioletCore
 
 // swiftlint:disable file_length
@@ -707,7 +707,8 @@ public struct PyString: PyObjectMixin, AbstractString {
 
     for element in zelf.elements {
       let mapping = UnicodeData.toCasefold(element)
-      builder.append(mapping: mapping)
+      let unicodescalar=mapping.unicodeScalars.map { $0.value }.reduce(0, +)
+      builder.append(element: Unicode.Scalar(unicodescalar)!)
     }
 
     let result = builder.finalize()

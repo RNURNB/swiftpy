@@ -1,5 +1,5 @@
 import Foundation
-import UnicodeData
+//import UnicodeData
 import VioletCore
 
 // MARK: - ASCII

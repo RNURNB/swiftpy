@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import FileSystem
-import UnicodeData
+//import UnicodeData
 import VioletCore
 
 // cSpell:ignore printinternal displayline
