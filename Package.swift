@@ -15,6 +15,7 @@ let products: [Product] = [
   // Violet as a library.
   .library(name: "LibViolet", targets: ["VioletVM"]),
   .library(name: "BigInt", targets: ["BigInt"]),
+  .library(name: "VioletCore", targets: ["VioletCore"]),
 
   // Code generation tool used for AST and bytecode.
   .executable(name: "Elsa", targets: ["Elsa"]),
