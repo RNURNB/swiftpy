@@ -16,14 +16,14 @@ let products: [Product] = [
   //.library(name: "LibViolet", targets: ["VioletVM"]),
   .library(name: "BigInt", targets: ["BigInt"]),
   .library(name: "VioletCore", targets: ["VioletCore"]),
-  .library(name: "UnicodeData", targets: ["UnicodeData"]),
   .library(name: "FileSystem", targets: ["FileSystem"]),
   .library(name: "VioletLexer", targets: ["VioletLexer"]),
   .library(name: "VioletParser", targets: ["VioletParser"]),
   .library(name: "VioletCompiler", targets: ["VioletCompiler"]),
   .library(name: "VioletBytecode", targets: ["VioletBytecode"]),
-  .library(name: "VioletObjects", targets: ["VioletObjects"]),
-  .library(name: "VioletVM", targets: ["VioletVM"]),
+  //.library(name: "UnicodeData", targets: ["UnicodeData"]),
+  //.library(name: "VioletObjects", targets: ["VioletObjects"]),
+  //.library(name: "VioletVM", targets: ["VioletVM"]),
 
   // Code generation tool used for AST and bytecode.
   .executable(name: "Elsa", targets: ["Elsa"]),
