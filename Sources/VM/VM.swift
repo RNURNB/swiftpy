@@ -12,7 +12,7 @@ public final class VM {
   internal let fileSystem = PyFileSystem(fileSystem: .default)
 
   public init(arguments: Arguments, environment: Environment) {
-    let executablePath = Bundle.main.executablePath ??
+    let executablePath = /*Bundle.main.executablePath ??*/
         arguments.raw.first ??
         Sys.implementation.name
 
