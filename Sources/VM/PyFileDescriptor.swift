@@ -12,7 +12,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
   /// Path for error messages
   private let path: String?
 
-  internal var description: String {
+  public var description: String {
     return self.fd.description
   }
 
@@ -23,13 +23,13 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Raw
 
-  internal var raw: Int32 {
+  public var raw: Int32 {
     return self.fd.raw
   }
 
   // MARK: - Read
 
-  internal func readLine(_ py: Py) -> PyResultGen<Data> {
+  public func readLine(_ py: Py) -> PyResultGen<Data> {
     do {
       let data = try self.fd.readLine()
       return .value(data)
@@ -38,7 +38,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
     }
   }
 
-  internal func readToEnd(_ py: Py) -> PyResultGen<Data> {
+  public func readToEnd(_ py: Py) -> PyResultGen<Data> {
     do {
       let data = try self.fd.readToEnd()
       return .value(data)
@@ -47,7 +47,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
     }
   }
 
-  internal func read(_ py: Py, count: Int) -> PyResultGen<Data> {
+  public func read(_ py: Py, count: Int) -> PyResultGen<Data> {
     do {
       let data = try self.fd.read(upToCount: count)
       return .value(data)
@@ -58,7 +58,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Write
 
-  internal func write<T: DataProtocol>(_ py: Py, data: T) -> PyBaseException? {
+  public func write<T: DataProtocol>(_ py: Py, data: T) -> PyBaseException? {
     do {
       try self.fd.write(contentsOf: data)
       return nil
@@ -69,7 +69,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Flush
 
-  internal func flush(_ py: Py) -> PyBaseException? {
+  public func flush(_ py: Py) -> PyBaseException? {
     do {
       try self.fd.synchronize()
       return nil
@@ -80,7 +80,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Offset
 
-  internal func offset(_ py: Py) -> PyResultGen<UInt64> {
+  public func offset(_ py: Py) -> PyResultGen<UInt64> {
     do {
       let result = try self.fd.offset()
       return .value(result)
@@ -91,7 +91,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Seek
 
-  internal func seekToEnd(_ py: Py) -> PyResultGen<UInt64> {
+  public func seekToEnd(_ py: Py) -> PyResultGen<UInt64> {
     do {
       let result = try self.fd.seekToEnd()
       return .value(result)
@@ -100,7 +100,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
     }
   }
 
-  internal func seek(_ py: Py, offset: UInt64) -> PyBaseException? {
+  public func seek(_ py: Py, offset: UInt64) -> PyBaseException? {
     do {
       try self.fd.seek(toOffset: offset)
       return nil
@@ -111,7 +111,7 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Close
 
-  internal func close(_ py: Py) -> PyBaseException? {
+  public func close(_ py: Py) -> PyBaseException? {
     do {
       try self.fd.close()
       return nil
@@ -122,12 +122,12 @@ public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   // MARK: - Error
 
-  private func toOSError<T>(_ py: Py, _ error: Error) -> PyResultGen<T> {
+  public func toOSError<T>(_ py: Py, _ error: Error) -> PyResultGen<T> {
     let osError: PyBaseException = self.toOSError(py, error)
     return .error(osError)
   }
 
-  private func toOSError(_ py: Py, _ error: Error) -> PyBaseException {
+  public func toOSError(_ py: Py, _ error: Error) -> PyBaseException {
     if let descriptorError = error as? FileDescriptor.Error {
       let errno = descriptorError.errno
       if let p = self.path {
