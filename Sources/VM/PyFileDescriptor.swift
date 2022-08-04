@@ -6,7 +6,7 @@ import VioletObjects
 ///
 /// Basically it will call a method on provided `FileDescriptor`
 /// and then in case of exception it will convert it to Python error.
-internal struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
+public struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType {
 
   private let fd: FileDescriptor
   /// Path for error messages
@@ -16,7 +16,7 @@ internal struct PyFileDescriptor: CustomStringConvertible, PyFileDescriptorType 
     return self.fd.description
   }
 
-  internal init(fd: FileDescriptor, path: String?) {
+  public init(fd: FileDescriptor, path: String?) {
     self.fd = fd
     self.path = path
   }
