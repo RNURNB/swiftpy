@@ -10,7 +10,7 @@ import VioletCore
 // peephole optimizer (for example: avoid evaluating '__bool__' more times than needed).
 // So, we have to do exactly the same things as them.
 
-internal struct PeepholeOptimizer {
+public struct PeepholeOptimizer {
 
   /// `Instructions` before any optimizations were applied.
   internal let oldInstructions: [Instruction]
@@ -28,7 +28,7 @@ internal struct PeepholeOptimizer {
   /// were applied.
   internal let oldJumpTable: PeepholeJumpTable
 
-  internal init(instructions: [Instruction],
+  public init(instructions: [Instruction],
                 instructionLines: [SourceLine],
                 constants: [CodeObject.Constant],
                 labels: [CodeObject.Label]) {
@@ -42,7 +42,7 @@ internal struct PeepholeOptimizer {
 
   // MARK: - Run
 
-  internal struct RunResult {
+  public struct RunResult {
     internal fileprivate(set) var instructions: [Instruction]
     internal fileprivate(set) var instructionLines: [SourceLine]
     internal fileprivate(set) var constants: [CodeObject.Constant]
@@ -58,7 +58,7 @@ internal struct PeepholeOptimizer {
   /// PyObject *
   /// PyCode_Optimize(PyObject *code, PyObject* consts, PyObject *names,
   ///                 PyObject *lnotab_obj)
-  internal func run() -> RunResult {
+  public func run() -> RunResult {
     var optimizationResult = OptimizationResult(
       instructions: self.oldInstructions,
       instructionLines: self.oldInstructionLines,
@@ -97,7 +97,7 @@ internal struct PeepholeOptimizer {
   // swiftlint:disable function_body_length
 
   /// For-each on instructions and apply optimizations.
-  private func applyOptimizations(result: inout OptimizationResult) {
+  public func applyOptimizations(result: inout OptimizationResult) {
     // swiftlint:enable function_body_length
     var instructionIndex: Int? = 0
 
@@ -151,7 +151,7 @@ internal struct PeepholeOptimizer {
 
   /// Imagine that we removed all `nop` from the bytecode.
   /// This `struct` holds an index of every instruction in the resulting bytecode.
-  private struct InstructionIndicesSkippingNop {
+  public struct InstructionIndicesSkippingNop {
 
     private var data = [Int]()
 
@@ -169,7 +169,7 @@ internal struct PeepholeOptimizer {
     }
   }
 
-  private func rewriteInstructionsSkippingNop(
+  public func rewriteInstructionsSkippingNop(
     instructions: inout [Instruction],
     instructionLines: inout [SourceLine]
   ) -> InstructionIndicesSkippingNop {
@@ -205,7 +205,7 @@ internal struct PeepholeOptimizer {
     return newIndices
   }
 
-  private func removeTrailingExtendedArgs(
+  public func removeTrailingExtendedArgs(
     instructions: inout [Instruction],
     instructionLines: inout [SourceLine]
   ) {
@@ -222,7 +222,7 @@ internal struct PeepholeOptimizer {
 
   // MARK: - Retarget labels
 
-  private func retargetLabels(
+  public func retargetLabels(
     labels: inout [CodeObject.Label],
     to newIndices: InstructionIndicesSkippingNop
   ) {
@@ -239,7 +239,7 @@ internal struct PeepholeOptimizer {
 
   /// If there is any label that jumps past `instructions` -> append `nop`.
   /// Just so that we have such instruction
-  private func addNopsToPreventOutOfBoundJumps(
+  public func addNopsToPreventOutOfBoundJumps(
     instructions: inout [Instruction],
     instructionLines: inout [SourceLine],
     labels: [CodeObject.Label]

@@ -309,7 +309,7 @@ public final class CodeObject: Equatable {
 
   // MARK: - Init
 
-  internal init(name: String,
+  public init(name: String,
                 qualifiedName: String,
                 filename: String,
                 kind: Kind,
