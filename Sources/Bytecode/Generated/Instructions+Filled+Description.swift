@@ -139,7 +139,7 @@ extension Instruction.Filled: CustomStringConvertible {
     case let .unpackEx(arg: value0):
       return "unpackEx(arg: \(value0))"
     case let .loadConst(value0):
-      return "loadConst(\(value0))"
+      return "loadConst(\(value0)-\(type(of:value0)))"
     case let .storeName(name: value0):
       return "storeName(name: \(value0))"
     case let .loadName(name: value0):
