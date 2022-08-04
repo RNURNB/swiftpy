@@ -1,35 +1,35 @@
 /// Bundle `Instruction` + all of its `extendedArgs` together.
-internal struct PeepholeInstruction {
+public struct PeepholeInstruction {
 
   /// Index of the first `extendedArg` (of `self.value` index if this instruction
   /// does not have any `extendedArgs`).
-  internal let startIndex: Int
+  public let startIndex: Int
 
   /// An actual instruction (not `extendedArg`).
-  internal let value: Instruction
+  public let value: Instruction
 
   /// We don't know the current instruction, so we don't have the full `arg` value.
   /// Use `getArg(instructionArg:)` to get proper argument.
   private let argWithoutInstructionArg: Int
 
   /// Number of `extendedArg` before `self.value`.
-  internal let extendedArgCount: Int
+  public let extendedArgCount: Int
 
   /// Number of instructions including `extendedArg`
   /// (basically: `self.extendedArgCount + 1`).
-  internal var instructionCount: Int {
+  public var instructionCount: Int {
     return self.extendedArgCount + 1
   }
 
-  internal var previousInstructionUnalignedIndex: Int? {
+  public var previousInstructionUnalignedIndex: Int? {
     return self.startIndex == 0 ? nil : self.startIndex - 1
   }
 
   /// Index of the next instruction.
-  internal var nextInstructionIndex: Int?
+  public var nextInstructionIndex: Int?
 
   /// Get the instruction argument accounting for `extendedArgs`.
-  internal func getArgument(instructionArg: UInt8) -> Int {
+  public func getArgument(instructionArg: UInt8) -> Int {
     return Instruction.extend(
       base: self.argWithoutInstructionArg,
       arg: instructionArg
@@ -40,7 +40,7 @@ internal struct PeepholeInstruction {
 
   /// \#define CONDITIONAL_JUMP(op) (op==POP_JUMP_IF_FALSE || op==POP_JUMP_IF_TRUE \
   ///    || op==JUMP_IF_FALSE_OR_POP || op==JUMP_IF_TRUE_OR_POP)
-  internal var isConditionalJump: Bool {
+  public var isConditionalJump: Bool {
     switch self.value {
     case .popJumpIfFalse,
          .popJumpIfTrue,
@@ -53,7 +53,7 @@ internal struct PeepholeInstruction {
   }
 
   /// \#define UNCONDITIONAL_JUMP(op)  (op==JUMP_ABSOLUTE || op==JUMP_FORWARD)
-  internal var isUnconditionalJump: Bool {
+  public var isUnconditionalJump: Bool {
     switch self.value {
     case .jumpAbsolute:
       // We do not have jumpForward
@@ -64,7 +64,7 @@ internal struct PeepholeInstruction {
   }
 
   /// \#define JUMPS_ON_TRUE(op) (op==POP_JUMP_IF_TRUE || op==JUMP_IF_TRUE_OR_POP)
-  internal var isJumpOnTrue: Bool {
+  public var isJumpOnTrue: Bool {
     // We can omit the '(labelIndex: _)', but this is better.
     switch self.value {
     case .popJumpIfTrue,
@@ -82,7 +82,7 @@ internal struct PeepholeInstruction {
   ///
   /// `Unaligned` means that you don't have to be at the start of an instruction
   /// to use this method.
-  internal init?(instructions: [Instruction], unalignedIndex index: Int) {
+  public init?(instructions: [Instruction], unalignedIndex index: Int) {
     var startIndex = index
     Self.goBackToFirstExtendedArg(instructions: instructions, index: &startIndex)
 
@@ -117,7 +117,7 @@ internal struct PeepholeInstruction {
   ///
   /// This is the method that you want to use if you traverse bytecode in the
   /// 'normal' order (from start to the end).
-  internal init?(instructions: [Instruction], startIndex: Int) {
+  public init?(instructions: [Instruction], startIndex: Int) {
     guard instructions.indices.contains(startIndex) else {
       return nil
     }
