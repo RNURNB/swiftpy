@@ -13,6 +13,8 @@ import VioletCore
 /// Use `CodeObjectBuilder` for creation.
 public final class CodeObject: Equatable {
 
+  public var vmcode: AnyObject?=nil //VMCode
+
   // MARK: - Kind
 
   public enum Kind: Equatable, CustomStringConvertible {
