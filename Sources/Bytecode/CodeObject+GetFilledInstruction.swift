@@ -10,6 +10,11 @@ extension CodeObject {
     public var description: String {
       return String(describing: self.instruction)
     }
+
+	 public init(instruction: Instruction.Filled, nextInstructionIndex: Int?) {
+		self.instruction=instruction
+		self.nextInstructionIndex=nextInstructionIndex
+	 }
   }
 
   /// Get instruction with proper typed argument.

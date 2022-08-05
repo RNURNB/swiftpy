@@ -6,13 +6,13 @@ import VioletCore
 
 // swiftlint:disable line_length
 
-extension Instruction {
+public extension Instruction {
 
   /// Instruction with proper typed argument taken from `CodeObject`.
   ///
   /// Can be used for utility functionality (like printing),
   /// but the performance is not adequate for `VM` use.
-  public enum Filled: Equatable {
+  enum Filled: Equatable {
       /// Do nothing code.
       case nop
       /// Removes the top-of-stack (`TOS`) item.
