@@ -4,9 +4,9 @@
 import Foundation
 import VioletCore
 
-public extension Instruction.Filled: CustomStringConvertible {
+extension Instruction.Filled: CustomStringConvertible {
 
-  var description: String {
+  public var description: String {
     switch self {
     case .nop:
       return "nop"
