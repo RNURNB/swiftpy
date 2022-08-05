@@ -43,10 +43,10 @@ public struct PeepholeOptimizer {
   // MARK: - Run
 
   public struct RunResult {
-    internal fileprivate(set) var instructions: [Instruction]
-    internal fileprivate(set) var instructionLines: [SourceLine]
-    internal fileprivate(set) var constants: [CodeObject.Constant]
-    internal fileprivate(set) var labels: [CodeObject.Label]
+    public fileprivate(set) var instructions: [Instruction]
+    public fileprivate(set) var instructionLines: [SourceLine]
+    public fileprivate(set) var constants: [CodeObject.Constant]
+    public fileprivate(set) var labels: [CodeObject.Label]
   }
 
   /// Optimizations are restricted to simple transformations occurring within a
