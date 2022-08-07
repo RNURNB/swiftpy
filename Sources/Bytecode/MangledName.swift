@@ -16,7 +16,7 @@ public struct MangledName: Equatable, Hashable, CustomStringConvertible {
   /// Name BEFORE mangling
   public let beforeMangling: String
   
-  public let index: Int = 0
+  public var index: Int = 0
 
   /// Name AFTER mangling
   public let value: String
