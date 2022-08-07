@@ -15,6 +15,8 @@ public struct MangledName: Equatable, Hashable, CustomStringConvertible {
 
   /// Name BEFORE mangling
   public let beforeMangling: String
+  
+  public let index: Int = 0
 
   /// Name AFTER mangling
   public let value: String
@@ -24,9 +26,10 @@ public struct MangledName: Equatable, Hashable, CustomStringConvertible {
   }
 
   /// Init without mangling
-  public init(withoutClass name: String) {
+  public init(withoutClass name: String, index:Int=0) {
     self.beforeMangling = name
     self.value = name
+    self.index=index
   }
 
   /// Init with mangling
