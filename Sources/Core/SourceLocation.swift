@@ -1,5 +1,5 @@
 // '4_294_967_296' seems like a reasonable assumption
-public typealias SourceLine = UInt32
+public typealias SourceLine = UInt64
 public typealias SourceColumn = UInt32
 
 /// Location in the source file.
