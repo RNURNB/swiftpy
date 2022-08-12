@@ -29,7 +29,7 @@ extension CompilerImpl {
       self.setAppendLocation(alias)
 
       // The Import node stores a module name like a.b.c as a single string.
-      self.builder.appendInteger(BigInt(0))
+      self.builder.appendInteger(0)
       self.builder.appendNone()
       self.builder.appendImportName(name: alias.name)
 

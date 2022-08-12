@@ -43,6 +43,12 @@ extension CodeObjectBuilder {
       self.cache.ellipsis = index
     }
   }
+  
+  public func appendInteger(_ value: BigInt) {
+      //convert to int
+      let s=value.description
+      self.appendInteger(Int(s)!)
+  }
 
   /// Append a `loadConst(Integer)` instruction to this code object.
   public func appendInteger(_ value: Int) {
