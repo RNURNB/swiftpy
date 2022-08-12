@@ -45,7 +45,7 @@ extension CodeObjectBuilder {
   }
 
   /// Append a `loadConst(Integer)` instruction to this code object.
-  public func appendInteger(_ value: BigInt) {
+  public func appendInteger(_ value: Int) {
     switch value {
     case 0:
       if let index = self.cache.zero {

@@ -76,7 +76,7 @@ extension PeepholeOptimizer {
       return false
 
     case let .integer(int):
-      return !int.isZero
+      return !(int==0) //!int.isZero
     case let .float(double):
       return !double.isZero
     case let .complex(real: real, imag: imag):
