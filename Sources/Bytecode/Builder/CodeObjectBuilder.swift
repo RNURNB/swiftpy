@@ -75,7 +75,11 @@ public final class CodeObjectBuilder {
   ///
   /// `usePeepholeOptimizer = false` is for tests (and only for those that do
   ///  require it, most of the time we do want optimizations).
-  internal func finalize(usePeepholeOptimizer: Bool) -> CodeObject {
+  internal func finalize(usePeepholeOptimizer: Bool, 
+                         names:[String]?=nil, 
+                         variableNames: [MangledName]?=nil, 
+                         freeVariableNames: [MangledName]?=nil,
+                         cellVariableNames: [MangledName]?=nil) -> CodeObject {
     // swiftlint:disable:previous function_body_length
 
     self.assertAllLabelsAssigned()
@@ -107,11 +111,11 @@ public final class CodeObjectBuilder {
                       instructions: instructions,
                       instructionLines: instructionLines,
                       constants: constants,
-                      names: self.names,
+                      names: names ?? self.names,
                       labels: labels,
-                      variableNames: self.variableNames,
-                      freeVariableNames: self.freeVariableNames,
-                      cellVariableNames: self.cellVariableNames,
+                      variableNames: variableNames ?? self.variableNames,
+                      freeVariableNames: freeVariableNames ?? self.freeVariableNames,
+                      cellVariableNames: cellVariableNames ?? self.cellVariableNames,
                       argCount: self.argCount,
                       posOnlyArgCount: self.posOnlyArgCount,
                       kwOnlyArgCount: self.kwOnlyArgCount)
