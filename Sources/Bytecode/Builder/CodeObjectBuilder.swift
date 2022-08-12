@@ -75,7 +75,7 @@ public final class CodeObjectBuilder {
   ///
   /// `usePeepholeOptimizer = false` is for tests (and only for those that do
   ///  require it, most of the time we do want optimizations).
-  internal func finalize(usePeepholeOptimizer: Bool, 
+  public func finalize(usePeepholeOptimizer: Bool, 
                          names:[String]?=nil, 
                          variableNames: [MangledName]?=nil, 
                          freeVariableNames: [MangledName]?=nil,
