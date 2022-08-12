@@ -31,6 +31,12 @@ public struct MangledName: Equatable, Hashable, CustomStringConvertible {
     self.value = name
     self.index=index
   }
+  
+  public init(typeName: String, name: String, index: Int=0) {
+    self.beforeMangling = name
+    self.value = typeName+"."+name
+    self.index=index
+  }
 
   /// Init with mangling
   public init(className: String?, name: String) {
