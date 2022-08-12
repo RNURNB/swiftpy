@@ -125,7 +125,7 @@ public final class CodeObject: Equatable {
     case `false`
     case none
     case ellipsis
-    case integer(BigInt)
+    case integer(Int)
     case float(Double)
     case complex(real: Double, imag: Double)
     case string(String)
