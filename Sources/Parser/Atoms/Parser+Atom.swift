@@ -23,7 +23,7 @@ extension Parser {
     }
 
     return isAwait ?
-      self.builder.awaitExpr(value: rightExpr,
+      try self.builder.awaitExpr(value: rightExpr,
                              context: .load,
                              start: start,
                              end: rightExpr.end) :
@@ -52,26 +52,26 @@ extension Parser {
 
     case let .identifier(value):
       try self.advance()
-      return self.builder.identifierExpr(value: value,
+      return try self.builder.identifierExpr(value: value,
                                          context: context,
                                          start: start,
                                          end: end)
 
     case let .int(value):
       try self.advance()
-      return self.builder.intExpr(value: value,
+      return try self.builder.intExpr(value: value,
                                   context: .load,
                                   start: start,
                                   end: end)
     case let .float(value):
       try self.advance()
-      return self.builder.floatExpr(value: value,
+      return try self.builder.floatExpr(value: value,
                                     context: .load,
                                     start: start,
                                     end: end)
     case let .imaginary(value):
       try self.advance()
-      return self.builder.complexExpr(real: 0.0,
+      return try self.builder.complexExpr(real: 0.0,
                                       imag: value,
                                       context: .load,
                                       start: start,
@@ -85,16 +85,16 @@ extension Parser {
 
     case .ellipsis:
       try self.advance()
-      return self.builder.ellipsisExpr(context: .load, start: start, end: end)
+      return try self.builder.ellipsisExpr(context: .load, start: start, end: end)
     case .none:
       try self.advance()
-      return self.builder.noneExpr(context: .load, start: start, end: end)
+      return try self.builder.noneExpr(context: .load, start: start, end: end)
     case .true:
       try self.advance()
-      return self.builder.trueExpr(context: .load, start: start, end: end)
+      return try self.builder.trueExpr(context: .load, start: start, end: end)
     case .false:
       try self.advance()
-      return self.builder.falseExpr(context: .load, start: start, end: end)
+      return try self.builder.falseExpr(context: .load, start: start, end: end)
 
     default:
       throw self.unexpectedToken(expected: [.expression])

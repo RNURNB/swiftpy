@@ -36,10 +36,10 @@ extension Parser {
 
     // swiftlint:disable multiline_arguments
     return isAsync ?
-      self.builder.asyncFunctionDefStmt(name: name, args: args, body: body,
+      try self.builder.asyncFunctionDefStmt(name: name, args: args, body: body,
                                         decorators: decorators, returns: returns,
                                         start: start, end: end) :
-      self.builder.functionDefStmt(name: name, args: args, body: body,
+      try self.builder.functionDefStmt(name: name, args: args, body: body,
                                    decorators: decorators, returns: returns,
                                    start: start, end: end)
     // swiftlint:enable multiline_arguments
@@ -63,7 +63,7 @@ extension Parser {
     try self.consumeOrThrow(.colon)
     let body = try self.suite()
 
-    return self.builder.classDefStmt(name: name,
+    return try self.builder.classDefStmt(name: name,
                                      bases: args?.args ?? [],
                                      keywords: args?.keywords ?? [], // PEP3115
                                      body: body,

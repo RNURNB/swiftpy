@@ -27,7 +27,7 @@ extension Parser {
       throw self.error(.mixBytesAndNonBytesLiterals)
     }
 
-    return self.builder.bytesExpr(value: data,
+    return try self.builder.bytesExpr(value: data,
                                   context: .load,
                                   start: start,
                                   end: end)
@@ -60,7 +60,7 @@ extension Parser {
         }
       default:
         // see 'while' condition
-        unreachable()
+        try unreachable()
       }
 
       end = self.peek.end
@@ -72,7 +72,7 @@ extension Parser {
     }
 
     let group = try string.compile()
-    return self.builder.stringExpr(value: group,
+    return try self.builder.stringExpr(value: group,
                                    context: .load,
                                    start: start,
                                    end: end)

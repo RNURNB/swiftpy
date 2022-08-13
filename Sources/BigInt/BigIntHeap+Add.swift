@@ -2,7 +2,7 @@ extension BigIntHeap {
 
   // MARK: - Smi
 
-  internal mutating func add(other: Smi.Storage) {
+  internal mutating func add(other: Smi.Storage) throws {
     defer { self.checkInvariants() }
 
     if other.isZero {
@@ -26,14 +26,14 @@ extension BigIntHeap {
     // Self positive, other negative: x + (-y) = x - y
     if self.isPositive {
       assert(other.isNegative)
-      self.sub(other: word)
+      try self.sub(other: word)
       return
     }
 
     // Self negative, other positive:  -x + y = -(x - y)
     assert(self.isNegative && other.isPositive)
     self.negate() // -x -> x
-    self.sub(other: word) // x - y
+    try self.sub(other: word) // x - y
     self.negate() // -(x - y)
     self.fixInvariants()
   }
@@ -60,7 +60,7 @@ extension BigIntHeap {
 
   // MARK: - Heap
 
-  internal mutating func add(other: BigIntHeap) {
+  internal mutating func add(other: BigIntHeap) throws {
     defer { self.checkInvariants() }
 
     if other.isZero {
@@ -83,14 +83,14 @@ extension BigIntHeap {
       assert(other.isNegative)
       var otherPositive = other
       otherPositive.storage.isNegative = false
-      self.sub(other: otherPositive)
+      try self.sub(other: otherPositive)
       return
     }
 
     // Self negative, other positive:  -x + y = -(x - y)
     assert(self.isNegative && other.isPositive)
     self.negate() // -x -> x
-    self.sub(other: other) // x - y
+    try self.sub(other: other) // x - y
     self.negate() // -(x - y)
     self.fixInvariants()
   }

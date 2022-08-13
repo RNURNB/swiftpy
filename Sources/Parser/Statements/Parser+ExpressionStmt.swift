@@ -28,7 +28,7 @@ extension Parser {
     let firstStart = self.peek.start
     let firstList = try self.testListStarExpr(context: .load,
                                               closingTokens: firstClosing)
-    let first = firstList.toExpression(using: &self.builder, start: firstStart)
+    let first = try firstList.toExpression(using: &self.builder, start: firstStart)
 
     switch self.peek.kind {
     case .colon:
@@ -70,7 +70,7 @@ extension Parser {
     }
 
     let isSimple = target is IdentifierExpr && !isTargetInParen
-    return self.builder.annAssignStmt(target: target,
+    return try self.builder.annAssignStmt(target: target,
                                       annotation: annotation,
                                       value: value,
                                       isSimple: isSimple,
@@ -143,7 +143,7 @@ extension Parser {
     let value = try self.parseAugAssignValue(closingTokens: closingTokens)
 
     // swiftlint:disable force_unwrapping
-    return self.builder.augAssignStmt(target: target,
+    return try self.builder.augAssignStmt(target: target,
                                       op: op!,
                                       value: value,
                                       start: target.start,
@@ -167,7 +167,7 @@ extension Parser {
 
     let listStart = self.peek.start
     let list = try self.testList(context: .load, closingTokens: closingTokens)
-    return list.toExpression(using: &self.builder, start: listStart)
+    return try list.toExpression(using: &self.builder, start: listStart)
   }
 
   // MARK: - Normal assignment
@@ -189,14 +189,14 @@ extension Parser {
       } else {
         let testStart = self.peek.start
         let test = try self.testListStarExpr(context: .load, closingTokens: elementClosing)
-        elements.append(test.toExpression(using: &self.builder, start: testStart))
+        elements.append(try test.toExpression(using: &self.builder, start: testStart))
       }
     }
 
     guard let value = elements.last else {
       // Just an expr, without anything else. It does not even matter
       // (unless it has a side-effect, like exception…).
-      return self.builder.exprStmt(expression: firstTarget,
+      return try self.builder.exprStmt(expression: firstTarget,
                                    start: firstTarget.start,
                                    end: firstTarget.end)
     }
@@ -207,7 +207,7 @@ extension Parser {
     SetStoreExpressionContext.run(expressions: targets)
     SetLoadExpressionContext.run(expression: value)
 
-    return self.builder.assignStmt(targets: targets,
+    return try self.builder.assignStmt(targets: targets,
                                    value: value,
                                    start: firstTarget.start,
                                    end: value.end)

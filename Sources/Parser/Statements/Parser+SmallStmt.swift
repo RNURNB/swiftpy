@@ -21,13 +21,13 @@ extension Parser {
       return try self.delStmt(closingTokens: closingTokens)
     case .pass:
       try self.advance()
-      return self.builder.passStmt(start: token.start, end: token.end)
+      return try self.builder.passStmt(start: token.start, end: token.end)
     case .break:
       try self.advance()
-      return self.builder.breakStmt(start: token.start, end: token.end)
+      return try self.builder.breakStmt(start: token.start, end: token.end)
     case .continue:
       try self.advance()
-      return self.builder.continueStmt(start: token.start, end: token.end)
+      return try self.builder.continueStmt(start: token.start, end: token.end)
     case .return:
       return try self.returnStmt(closingTokens: closingTokens)
     case .raise:
@@ -42,7 +42,7 @@ extension Parser {
     // DO NOT consume yield! `yield_expr` is responsible for this!
     case _ where self.isYieldExpr():
       let expr = try self.yieldExpr(closingTokens: closingTokens)
-      return self.builder.exprStmt(expression: expr,
+      return try self.builder.exprStmt(expression: expr,
                                    start: token.start,
                                    end: expr.end)
 
@@ -65,9 +65,9 @@ extension Parser {
     switch exprs.kind {
     case let .single(e):
       let es = NonEmptyArray(first: e)
-      return self.builder.deleteStmt(values: es, start: start, end: e.end)
+      return try self.builder.deleteStmt(values: es, start: start, end: e.end)
     case let .tuple(es, end):
-      return self.builder.deleteStmt(values: es, start: start, end: end)
+      return try self.builder.deleteStmt(values: es, start: start, end: end)
     }
   }
 
@@ -81,20 +81,20 @@ extension Parser {
 
     let isEnd = closingTokens.contains(self.peek.kind)
     if isEnd {
-      return self.builder.returnStmt(value: nil, start: start, end: token.end)
+      return try self.builder.returnStmt(value: nil, start: start, end: token.end)
     }
 
     let testList = try self.testList(context: .load, closingTokens: closingTokens)
     switch testList.kind {
     case let .single(e):
-      return self.builder.returnStmt(value: e, start: start, end: e.end)
+      return try self.builder.returnStmt(value: e, start: start, end: e.end)
     case let .tuple(es, end):
       let tupleStart = es.first.start
-      let tuple = self.builder.tupleExpr(elements: Array(es),
+      let tuple = try self.builder.tupleExpr(elements: Array(es),
                                          context: .load,
                                          start: tupleStart,
                                          end: end)
-      return self.builder.returnStmt(value: tuple, start: start, end: end)
+      return try self.builder.returnStmt(value: tuple, start: start, end: end)
     }
   }
 
@@ -108,7 +108,7 @@ extension Parser {
 
     let isEnd = closingTokens.contains(self.peek.kind)
     if isEnd {
-      return self.builder.raiseStmt(exception: nil,
+      return try self.builder.raiseStmt(exception: nil,
                                     cause: nil,
                                     start: start,
                                     end: token.end)
@@ -121,7 +121,7 @@ extension Parser {
       cause = try self.test(context: .load)
     }
 
-    return self.builder.raiseStmt(exception: exception,
+    return try self.builder.raiseStmt(exception: exception,
                                   cause: cause,
                                   start: start,
                                   end: cause?.end ?? exception.end)
@@ -136,7 +136,7 @@ extension Parser {
     try self.advance() // global
 
     let (names, end) = try self.nameList(separator: .comma)
-    return self.builder.globalStmt(identifiers: names, start: start, end: end)
+    return try self.builder.globalStmt(identifiers: names, start: start, end: end)
   }
 
   /// nonlocal_stmt: 'nonlocal' NAME (',' NAME)*
@@ -148,7 +148,7 @@ extension Parser {
     try self.advance() // nonlocal
 
     let (names, end) = try self.nameList(separator: .comma)
-    return self.builder.nonlocalStmt(identifiers: names, start: start, end: end)
+    return try self.builder.nonlocalStmt(identifiers: names, start: start, end: end)
   }
 
   /// assert_stmt: 'assert' test [',' test]
@@ -167,7 +167,7 @@ extension Parser {
     }
 
     let end = msg?.end ?? test.end
-    return self.builder.assertStmt(test: test, msg: msg, start: start, end: end)
+    return try self.builder.assertStmt(test: test, msg: msg, start: start, end: end)
   }
 
   /// NAME (',' NAME)*

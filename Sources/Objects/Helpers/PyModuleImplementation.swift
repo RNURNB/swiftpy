@@ -185,7 +185,7 @@ extension PyModuleImplementation {
   internal func setOrTrap<T: PyObjectMixin>(_ name: Properties, value: T) {
     let valueObject = value.asObject
     if let e = self.set(name, value: valueObject) {
-      trap("Error when inserting '\(name)' to '\(Self.moduleName)': \(e)")
+      try! trap("Error when inserting '\(name)' to '\(Self.moduleName)': \(e)")
     }
   }
 
@@ -194,7 +194,7 @@ extension PyModuleImplementation {
     let builtinFunction = self.py.newBuiltinFunction(fn: fn, module: module, doc: doc)
 
     if let e = self.set(name, value: builtinFunction.asObject) {
-      trap("Error when inserting '\(name)' to '\(Self.moduleName)': \(e)")
+      try! trap("Error when inserting '\(name)' to '\(Self.moduleName)': \(e)")
     }
   }
 

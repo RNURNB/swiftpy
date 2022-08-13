@@ -104,17 +104,17 @@ extension FileSystem {
   }
 
   /// Create a directory (along with all parents).
-  public func mkdirpOrTrap(path: Path, mode: mode_t? = nil) -> MkdirpOrTrapResult {
+  public func mkdirpOrTrap(path: Path, mode: mode_t? = nil) throws -> MkdirpOrTrapResult {
     switch self.mkdirp(path: path, mode: mode) {
     case .ok:
       return .ok
     case .eexist:
       return .eexist
     case let .parentRemovedAfterCreation(p):
-      trap("Unable to mkdirp: Parent was removed after creating: \(p)")
+      try trap("Unable to mkdirp: Parent was removed after creating: \(p)")
     case let .error(p, errno: err):
       let msg = String(errno: err) ?? "Unknown error"
-      trap("Unable to mkdirp: \(msg): \(p)")
+      try trap("Unable to mkdirp: \(msg): \(p)")
     }
   }
 }

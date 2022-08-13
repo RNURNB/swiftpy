@@ -37,7 +37,7 @@ extension Parser {
 
       switch self.peek.kind {
       case let token where closingTokens.contains(token):
-        return self.builder.yieldExpr(value: nil,
+        return try self.builder.yieldExpr(value: nil,
                                       context: .load,
                                       start: yieldToken.start,
                                       end: yieldToken.end)
@@ -46,7 +46,7 @@ extension Parser {
         try self.advance() // yield from
 
         let test = try self.test(context: .load)
-        return self.builder.yieldFromExpr(value: test,
+        return try self.builder.yieldFromExpr(value: test,
                                           context: .load,
                                           start: yieldToken.start,
                                           end: test.end)
@@ -54,21 +54,21 @@ extension Parser {
       default:
         let testList = try self.testList(context: .load,
                                          closingTokens: closingTokens)
-        let target = self.yieldTarget(testList)
-        return self.builder.yieldExpr(value: target,
+        let target = try self.yieldTarget(testList)
+        return try self.builder.yieldExpr(value: target,
                                       context: .load,
                                       start: yieldToken.start,
                                       end: target.end)
       }
   }
 
-  private func yieldTarget(_ result: TestListResult) -> Expression {
+  private func yieldTarget(_ result: TestListResult) throws -> Expression {
     switch result.kind {
     case let .single(e):
       return e
     case let .tuple(es, end):
       let start = es.first.start
-      return self.builder.tupleExpr(elements: Array(es),
+      return try self.builder.tupleExpr(elements: Array(es),
                                     context: .load,
                                     start: start,
                                     end: end)

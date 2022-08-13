@@ -768,7 +768,7 @@ public struct PyInt: PyObjectMixin {
     let differentSign = left.isNegative != right.isNegative
     if differentSign {
       remainder += right
-      quotient -= 1
+      try! quotient -= 1
     }
 
     return DivMod(div: quotient, mod: remainder)
@@ -870,7 +870,7 @@ public struct PyInt: PyObjectMixin {
       return .valueError(py, message: "negative shift count")
     }
 
-    let result = value >> count
+    let result = try! value >> count
     return PyResult(py, result)
   }
 
@@ -1007,7 +1007,7 @@ public struct PyInt: PyObjectMixin {
       return .error(e)
     }
 
-    var twiceRem = result.mod << 2
+    var twiceRem = try! result.mod << 2
     if quotientIsNegative {
       twiceRem = -twiceRem
     }
@@ -1019,11 +1019,11 @@ public struct PyInt: PyObjectMixin {
 
     if greaterThanHalf || (exactlyHalf && quotientIsOdd) {
       if quotientIsNegative {
-        result.div -= 1
+        try! result.div -= 1
         result.mod += b
       } else {
         result.div += 1
-        result.mod -= b
+        try! result.mod -= b
       }
     }
 

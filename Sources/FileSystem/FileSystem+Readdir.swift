@@ -127,15 +127,15 @@ extension FileSystem {
 
   /// `readdir()` returns a list containing the entries in the directory given by `path`.
   /// The list is in arbitrary order.
-  public func readdirOrTrap(path: Path) -> Readdir {
+  public func readdirOrTrap(path: Path) throws -> Readdir {
     switch self.readdir(path: path) {
     case .value(let r):
       return r
     case .enoent:
-      trap("Unable to readdir: No such file or directory: \(path)")
+      try trap("Unable to readdir: No such file or directory: \(path)")
     case .error(let err):
       let msg = String(errno: err) ?? "Unknown error"
-      trap("Unable to readdir: \(msg): \(path)")
+      try trap("Unable to readdir: \(msg): \(path)")
     }
   }
 }
@@ -233,16 +233,16 @@ extension FileSystem {
 
   /// Same as `readdir` but it will go into directories and list their items.
   /// The list is in arbitrary order.
-  public func readdirRecOrTrap(path: Path) -> ReaddirRec {
+  public func readdirRecOrTrap(path: Path) throws -> ReaddirRec {
     switch self.readdirRec(path: path) {
     case let .value(r):
       return r
     case let .unableToStat(path, errno: e):
       let msg = String(errno: e) ?? "Unable to stat"
-      trap("\(msg): \(path)")
+      try trap("\(msg): \(path)")
     case let .unableToListContents(path, errno: e):
       let msg = String(errno: e) ?? "Unable to list contents of"
-      trap("\(msg): \(path)")
+      try trap("\(msg): \(path)")
     }
   }
 

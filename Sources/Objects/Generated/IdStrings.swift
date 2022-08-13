@@ -267,7 +267,7 @@ public struct IdString: CustomStringConvertible {
     case 116: return "name"
     case 117: return "object"
     case 118: return "origin"
-    default: trap("Unexpected IdString index: \(self.index).")
+    default: try! trap("Unexpected IdString index: \(self.index).")
     }
   }
 

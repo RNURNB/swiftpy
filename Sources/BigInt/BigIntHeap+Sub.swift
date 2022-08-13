@@ -4,7 +4,7 @@ extension BigIntHeap {
 
   // MARK: - Smi
 
-  internal mutating func sub(other: Smi.Storage) {
+  internal mutating func sub(other: Smi.Storage) throws {
     defer { self.checkInvariants() }
 
     if other.isZero {
@@ -30,12 +30,12 @@ extension BigIntHeap {
     }
 
     // Both have the same sign, for example '1 - 1' or '-2 - (-3)'.
-    self.subSameSign(other: word)
+    try self.subSameSign(other: word)
   }
 
   // MARK: - Word
 
-  internal mutating func sub(other: Word) {
+  internal mutating func sub(other: Word) throws {
     defer { self.checkInvariants() }
 
     // Different sign: 'self' negative, 'other' positive: -1 - 2
@@ -46,12 +46,12 @@ extension BigIntHeap {
 
     // Same sign: both positive
     assert(self.isPositive)
-    self.subSameSign(other: other)
+    try self.subSameSign(other: other)
   }
 
   /// Case when we have the same sign, for example '1 - 1' or '-2 - (-3)'.
   /// That means that we may need to cross 0.
-  private mutating func subSameSign(other: Word) {
+  private mutating func subSameSign(other: Word) throws {
     if self.isZero {
       self.storage.isNegative = true
       self.storage.append(other)
@@ -69,13 +69,13 @@ extension BigIntHeap {
       self.storage.isNegative = changedSign
 
     case .greater: // 2 - 1, sign stays the same
-      Self.subMagnitude(bigger: &self.storage, smaller: other)
+      try Self.subMagnitude(bigger: &self.storage, smaller: other)
       self.fixInvariants() // Fix possible '0' prefix
     }
   }
 
   internal static func subMagnitude(bigger: inout BigIntStorage,
-                                    smaller: Word) {
+                                    smaller: Word) throws {
     if smaller.isZero {
       return
     }
@@ -89,12 +89,12 @@ extension BigIntHeap {
       }
     }
 
-    trap("subMagnitude: bigger < smaller")
+    try trap("subMagnitude: bigger < smaller")
   }
 
   // MARK: - Heap
 
-  internal mutating func sub(other: BigIntHeap) {
+  internal mutating func sub(other: BigIntHeap) throws {
     defer { self.checkInvariants() }
 
     if other.isZero {
@@ -127,14 +127,14 @@ extension BigIntHeap {
       let changedSign = !self.isNegative
 
       var otherCopy = other.storage
-      Self.subMagnitudes(bigger: &otherCopy, smaller: self.storage)
+      try Self.subMagnitudes(bigger: &otherCopy, smaller: self.storage)
       self.storage = otherCopy
 
       self.storage.isNegative = changedSign
       self.fixInvariants() // Fix possible '0' prefix
 
     case .greater: // 2 - 1
-      Self.subMagnitudes(bigger: &self.storage, smaller: other.storage)
+      try Self.subMagnitudes(bigger: &self.storage, smaller: other.storage)
       self.fixInvariants() // Fix possible '0' prefix
     }
   }
@@ -142,7 +142,7 @@ extension BigIntHeap {
   /// Will NOT look at the sign of any of those numbers!
   /// Only at the magnitude.
   internal static func subMagnitudes(bigger: inout BigIntStorage,
-                                     smaller: BigIntStorage) {
+                                     smaller: BigIntStorage) throws {
     if smaller.isZero {
       return
     }
@@ -161,7 +161,7 @@ extension BigIntHeap {
     }
 
     guard borrow == 0 else {
-      trap("subMagnitude: bigger < smaller")
+      try trap("subMagnitude: bigger < smaller")
     }
   }
 }

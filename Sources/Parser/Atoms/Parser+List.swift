@@ -21,7 +21,7 @@ extension Parser {
       let end = self.peek.end
       try self.advance() // ]
 
-      return self.builder.listExpr(elements: [], context: context, start: start, end: end)
+      return try self.builder.listExpr(elements: [], context: context, start: start, end: end)
     }
 
     let test = try self.testListComp(context: context, closingToken: .rightSqb)
@@ -31,17 +31,17 @@ extension Parser {
 
     switch test {
     case let .single(e):
-      return self.builder.listExpr(elements: [e],
+      return try self.builder.listExpr(elements: [e],
                                    context: context,
                                    start: start,
                                    end: end)
     case let .multiple(es):
-      return self.builder.listExpr(elements: es,
+      return try self.builder.listExpr(elements: es,
                                    context: context,
                                    start: start,
                                    end: end)
     case let .listComprehension(elt: elt, generators: gen):
-      return self.builder.listComprehensionExpr(element: elt,
+      return try self.builder.listComprehensionExpr(element: elt,
                                                 generators: gen,
                                                 context: .load,
                                                 start: start,

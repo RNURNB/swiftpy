@@ -193,7 +193,7 @@ extension Eval {
       let line = self.frame.currentInstructionLine
       let details = "(instruction: \(instruction), line: \(line))"
       let msg = "Popped all blocks, but this still remains: '\(reason)' \(details)"
-      trap(msg)
+      try! trap(msg)
     }
   }
 
@@ -201,7 +201,7 @@ extension Eval {
 
   private func pushExceptHandlerBlock() {
     let block = PyFrame.Block(kind: .exceptHandler, stackCount: self.stack.count)
-    self.blockStack.push(block)
+    try! self.blockStack.push(block)
   }
 
   // MARK: - Push currently handled exception onto the stack and set new
@@ -276,7 +276,7 @@ extension Eval {
     case .noException:
       self.currentlyHandledException = nil
     case .invalidValue(let o):
-      trap("Expected to pop exception (or None), but popped '\(o)'.")
+      try! trap("Expected to pop exception (or None), but popped '\(o)'.")
     }
 
     assert(self.stack.count == block.stackCount)

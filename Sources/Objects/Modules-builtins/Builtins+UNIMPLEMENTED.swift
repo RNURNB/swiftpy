@@ -83,6 +83,6 @@ extension Builtins {
   // MARK: - Unimplemented
 
   private static func unimplemented(name: String) -> Never {
-    trap("'builtins.\(name)' is not implemented")
+    try! trap("'builtins.\(name)' is not implemented")
   }
 }

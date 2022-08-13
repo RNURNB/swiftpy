@@ -13,12 +13,12 @@ internal struct ExprListResult {
   }
 
   internal func toExpression(using builder: inout ASTBuilder,
-                             start: SourceLocation) -> Expression {
+                             start: SourceLocation) throws -> Expression {
     switch self.kind {
     case let .single(e):
       return e
     case let .tuple(es, end):
-      return builder.tupleExpr(elements: Array(es),
+      return try builder.tupleExpr(elements: Array(es),
                                context: self.context,
                                start: start,
                                end: end)
@@ -71,12 +71,12 @@ internal struct TestListResult {
   }
 
   internal func toExpression(using builder: inout ASTBuilder,
-                             start: SourceLocation) -> Expression {
+                             start: SourceLocation) throws -> Expression {
     switch self.kind {
     case let .single(e):
       return e
     case let .tuple(es, end):
-      return builder.tupleExpr(elements: Array(es),
+      return try builder.tupleExpr(elements: Array(es),
                                context: self.context,
                                start: start,
                                end: end)
@@ -176,12 +176,12 @@ internal struct TestListStarExprResult {
   }
 
   internal func toExpression(using builder: inout ASTBuilder,
-                             start: SourceLocation) -> Expression {
+                             start: SourceLocation) throws -> Expression {
     switch self.kind {
     case let .single(e):
       return e
     case let .tuple(es, end):
-      return builder.tupleExpr(elements: Array(es),
+      return try builder.tupleExpr(elements: Array(es),
                                context: self.context,
                                start: start,
                                end: end)

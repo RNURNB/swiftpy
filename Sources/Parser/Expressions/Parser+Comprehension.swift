@@ -67,7 +67,7 @@ extension Parser {
         ifs.append(try self.testNoCond(context: .load))
       }
 
-      let comp = self.builder.comprehension(target: self.compForTarget(targets),
+      let comp = try self.builder.comprehension(target: self.compForTarget(targets),
                                             iterable: iter,
                                             ifs: ifs,
                                             isAsync: isAsync,
@@ -84,12 +84,12 @@ extension Parser {
     return result
   }
 
-  private func compForTarget(_ result: ExprListResult) -> Expression {
+  private func compForTarget(_ result: ExprListResult) throws -> Expression {
     switch result.kind {
     case let .single(e):
       return e
     case let .tuple(es, end):
-      return self.builder.tupleExpr(elements: Array(es),
+      return try self.builder.tupleExpr(elements: Array(es),
                                     context: .store,
                                     start: es.first.start,
                                     end: end)

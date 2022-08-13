@@ -18,9 +18,9 @@ public enum SipHash {
   /// - Parameter bytes: buffer to hash
   public static func hash(key0: UInt64,
                           key1: UInt64,
-                          bytes: UnsafeBufferPointer<UInt8>) -> UInt64 {
+                          bytes: UnsafeBufferPointer<UInt8>) throws -> UInt64 {
     let rawBufferPointer = UnsafeRawBufferPointer(bytes)
-    return SipHash.hash(key0: key0, key1: key1, bytes: rawBufferPointer)
+    return try SipHash.hash(key0: key0, key1: key1, bytes: rawBufferPointer)
   }
 
   /// Hash given buffer using [SipHash-2-4](https://131002.net/siphash/).
@@ -30,7 +30,7 @@ public enum SipHash {
   /// - Parameter bytes: buffer to hash
   public static func hash(key0: UInt64,
                           key1: UInt64,
-                          bytes: UnsafeRawBufferPointer) -> UInt64 {
+                          bytes: UnsafeRawBufferPointer) throws -> UInt64 {
     var state = State(key0: key0, key1: key1)
 
     // Read bytes as 'UInt64' buffer.
@@ -57,7 +57,7 @@ public enum SipHash {
     case 2: b |= UInt64(bytes[remainingBytesStart + 1]) &<< 8; fallthrough
     case 1: b |= UInt64(bytes[remainingBytesStart]); fallthrough
     case 0: state.process(b)
-    default: unreachable() // "0 <= remainingBytes < 8"
+    default: try unreachable() // "0 <= remainingBytes < 8"
     }
 
     return state.finalize()

@@ -140,11 +140,11 @@ internal enum PushFinallyReason {
         if let pyInt = py.cast.asInt(object), let int = Int(exactly: pyInt.value) {
           return .continue(loopStartLabelIndex: int, asObject: pyInt)
         }
-        trap("Invalid argument (\(object)) for 'continue' after finally block")
+        try! trap("Invalid argument (\(object)) for 'continue' after finally block")
       case Marker.exception:
-        VM.unimplemented()
+        try! VM.unimplemented()
       case Marker.yield:
-        VM.unimplemented()
+        try! VM.unimplemented()
       case Marker.silenced:
         return .silenced
       default:

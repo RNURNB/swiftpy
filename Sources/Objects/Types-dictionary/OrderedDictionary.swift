@@ -405,7 +405,7 @@ public struct OrderedDictionary<Value> {
         let entryIndex = i.asEntryIndex
 
         guard case let .entry(old) = self.entries[entryIndex] else {
-          trap("Ordered dictionary - index was deleted, but entry was not.")
+          try! trap("Ordered dictionary - index was deleted, but entry was not.")
         }
 
         if hash == old.key.hash {

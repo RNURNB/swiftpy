@@ -118,7 +118,7 @@ extension Sys {
       case .ok:
         break
       case .error(let e):
-        trap("Error when inserting '\(name)' to 'sys.flags': \(e)")
+        try! trap("Error when inserting '\(name)' to 'sys.flags': \(e)")
       }
     }
 
@@ -241,7 +241,7 @@ extension Sys {
       case .ok:
         break
       case .error(let e):
-        trap("Error when creating 'hash_info' namespace: \(e)")
+        try! trap("Error when creating 'hash_info' namespace: \(e)")
       }
     }
 

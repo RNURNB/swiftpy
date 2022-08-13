@@ -16,10 +16,10 @@ public struct ASTBuilder {
   /// See `ASTNodeId` doc.
   public private(set) var nextId: ASTNodeId = 0
 
-  private mutating func getNextId() -> ASTNodeId {
+  private mutating func getNextId() throws -> ASTNodeId {
     let max = ASTNodeId.max
     guard self.nextId != max else {
-      trap("ASTBuilder: Reached maximum number of AST nodes: (\(max)).")
+      try trap("ASTBuilder: Reached maximum number of AST nodes: (\(max)).")
     }
 
     let result = self.nextId
@@ -35,9 +35,9 @@ public struct ASTBuilder {
     statements: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> InteractiveAST {
+  ) throws -> InteractiveAST {
     return InteractiveAST(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       statements: statements,
       start: start,
       end: end
@@ -50,9 +50,9 @@ public struct ASTBuilder {
     statements: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> ModuleAST {
+  ) throws -> ModuleAST {
     return ModuleAST(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       statements: statements,
       start: start,
       end: end
@@ -65,9 +65,9 @@ public struct ASTBuilder {
     expression: Expression,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ExpressionAST {
+  ) throws -> ExpressionAST {
     return ExpressionAST(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       expression: expression,
       start: start,
       end: end
@@ -84,9 +84,9 @@ public struct ASTBuilder {
     returns: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> FunctionDefStmt {
+  ) throws -> FunctionDefStmt {
     return FunctionDefStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       name: name,
       args: args,
       body: body,
@@ -107,9 +107,9 @@ public struct ASTBuilder {
     returns: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AsyncFunctionDefStmt {
+  ) throws -> AsyncFunctionDefStmt {
     return AsyncFunctionDefStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       name: name,
       args: args,
       body: body,
@@ -130,9 +130,9 @@ public struct ASTBuilder {
     decorators: [Expression],
     start: SourceLocation,
     end: SourceLocation
-  ) -> ClassDefStmt {
+  ) throws -> ClassDefStmt {
     return ClassDefStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       name: name,
       bases: bases,
       keywords: keywords,
@@ -149,9 +149,9 @@ public struct ASTBuilder {
     value: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ReturnStmt {
+  ) throws -> ReturnStmt {
     return ReturnStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       start: start,
       end: end
@@ -164,9 +164,9 @@ public struct ASTBuilder {
     values: NonEmptyArray<Expression>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> DeleteStmt {
+  ) throws -> DeleteStmt {
     return DeleteStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       values: values,
       start: start,
       end: end
@@ -180,9 +180,9 @@ public struct ASTBuilder {
     value: Expression,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AssignStmt {
+  ) throws -> AssignStmt {
     return AssignStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       targets: targets,
       value: value,
       start: start,
@@ -198,9 +198,9 @@ public struct ASTBuilder {
     value: Expression,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AugAssignStmt {
+  ) throws -> AugAssignStmt {
     return AugAssignStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       target: target,
       op: op,
       value: value,
@@ -218,9 +218,9 @@ public struct ASTBuilder {
     isSimple: Bool,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AnnAssignStmt {
+  ) throws -> AnnAssignStmt {
     return AnnAssignStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       target: target,
       annotation: annotation,
       value: value,
@@ -239,9 +239,9 @@ public struct ASTBuilder {
     orElse: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> ForStmt {
+  ) throws -> ForStmt {
     return ForStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       target: target,
       iterable: iterable,
       body: body,
@@ -260,9 +260,9 @@ public struct ASTBuilder {
     orElse: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> AsyncForStmt {
+  ) throws -> AsyncForStmt {
     return AsyncForStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       target: target,
       iterable: iterable,
       body: body,
@@ -280,9 +280,9 @@ public struct ASTBuilder {
     orElse: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> WhileStmt {
+  ) throws -> WhileStmt {
     return WhileStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       test: test,
       body: body,
       orElse: orElse,
@@ -299,9 +299,9 @@ public struct ASTBuilder {
     orElse: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> IfStmt {
+  ) throws -> IfStmt {
     return IfStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       test: test,
       body: body,
       orElse: orElse,
@@ -317,9 +317,9 @@ public struct ASTBuilder {
     optionalVars: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> WithItem {
+  ) throws -> WithItem {
     return WithItem(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       contextExpr: contextExpr,
       optionalVars: optionalVars,
       start: start,
@@ -334,9 +334,9 @@ public struct ASTBuilder {
     body: NonEmptyArray<Statement>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> WithStmt {
+  ) throws -> WithStmt {
     return WithStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       items: items,
       body: body,
       start: start,
@@ -351,9 +351,9 @@ public struct ASTBuilder {
     body: NonEmptyArray<Statement>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AsyncWithStmt {
+  ) throws -> AsyncWithStmt {
     return AsyncWithStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       items: items,
       body: body,
       start: start,
@@ -368,9 +368,9 @@ public struct ASTBuilder {
     body: NonEmptyArray<Statement>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ExceptHandler {
+  ) throws -> ExceptHandler {
     return ExceptHandler(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       kind: kind,
       body: body,
       start: start,
@@ -385,9 +385,9 @@ public struct ASTBuilder {
     cause: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> RaiseStmt {
+  ) throws -> RaiseStmt {
     return RaiseStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       exception: exception,
       cause: cause,
       start: start,
@@ -404,9 +404,9 @@ public struct ASTBuilder {
     finally: [Statement],
     start: SourceLocation,
     end: SourceLocation
-  ) -> TryStmt {
+  ) throws -> TryStmt {
     return TryStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       body: body,
       handlers: handlers,
       orElse: orElse,
@@ -423,9 +423,9 @@ public struct ASTBuilder {
     msg: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AssertStmt {
+  ) throws -> AssertStmt {
     return AssertStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       test: test,
       msg: msg,
       start: start,
@@ -440,9 +440,9 @@ public struct ASTBuilder {
     asName: String?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> Alias {
+  ) throws -> Alias {
     return Alias(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       name: name,
       asName: asName,
       start: start,
@@ -456,9 +456,9 @@ public struct ASTBuilder {
     names: NonEmptyArray<Alias>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ImportStmt {
+  ) throws -> ImportStmt {
     return ImportStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       names: names,
       start: start,
       end: end
@@ -473,9 +473,9 @@ public struct ASTBuilder {
     level: UInt8,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ImportFromStmt {
+  ) throws -> ImportFromStmt {
     return ImportFromStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       moduleName: moduleName,
       names: names,
       level: level,
@@ -491,9 +491,9 @@ public struct ASTBuilder {
     level: UInt8,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ImportFromStarStmt {
+  ) throws -> ImportFromStarStmt {
     return ImportFromStarStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       moduleName: moduleName,
       level: level,
       start: start,
@@ -507,9 +507,9 @@ public struct ASTBuilder {
     identifiers: NonEmptyArray<String>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> GlobalStmt {
+  ) throws -> GlobalStmt {
     return GlobalStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       identifiers: identifiers,
       start: start,
       end: end
@@ -522,9 +522,9 @@ public struct ASTBuilder {
     identifiers: NonEmptyArray<String>,
     start: SourceLocation,
     end: SourceLocation
-  ) -> NonlocalStmt {
+  ) throws -> NonlocalStmt {
     return NonlocalStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       identifiers: identifiers,
       start: start,
       end: end
@@ -537,9 +537,9 @@ public struct ASTBuilder {
     expression: Expression,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ExprStmt {
+  ) throws -> ExprStmt {
     return ExprStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       expression: expression,
       start: start,
       end: end
@@ -551,9 +551,9 @@ public struct ASTBuilder {
   public mutating func passStmt(
     start: SourceLocation,
     end: SourceLocation
-  ) -> PassStmt {
+  ) throws -> PassStmt {
     return PassStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       start: start,
       end: end
     )
@@ -564,9 +564,9 @@ public struct ASTBuilder {
   public mutating func breakStmt(
     start: SourceLocation,
     end: SourceLocation
-  ) -> BreakStmt {
+  ) throws -> BreakStmt {
     return BreakStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       start: start,
       end: end
     )
@@ -577,9 +577,9 @@ public struct ASTBuilder {
   public mutating func continueStmt(
     start: SourceLocation,
     end: SourceLocation
-  ) -> ContinueStmt {
+  ) throws -> ContinueStmt {
     return ContinueStmt(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       start: start,
       end: end
     )
@@ -591,9 +591,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> TrueExpr {
+  ) throws -> TrueExpr {
     return TrueExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       context: context,
       start: start,
       end: end
@@ -606,9 +606,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> FalseExpr {
+  ) throws -> FalseExpr {
     return FalseExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       context: context,
       start: start,
       end: end
@@ -621,9 +621,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> NoneExpr {
+  ) throws -> NoneExpr {
     return NoneExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       context: context,
       start: start,
       end: end
@@ -636,9 +636,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> EllipsisExpr {
+  ) throws -> EllipsisExpr {
     return EllipsisExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       context: context,
       start: start,
       end: end
@@ -652,9 +652,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> IdentifierExpr {
+  ) throws -> IdentifierExpr {
     return IdentifierExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -669,9 +669,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> StringExpr {
+  ) throws -> StringExpr {
     return StringExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -686,9 +686,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> IntExpr {
+  ) throws -> IntExpr {
     return IntExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -703,9 +703,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> FloatExpr {
+  ) throws -> FloatExpr {
     return FloatExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -721,9 +721,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ComplexExpr {
+  ) throws -> ComplexExpr {
     return ComplexExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       real: real,
       imag: imag,
       context: context,
@@ -739,9 +739,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> BytesExpr {
+  ) throws -> BytesExpr {
     return BytesExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -757,9 +757,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> UnaryOpExpr {
+  ) throws -> UnaryOpExpr {
     return UnaryOpExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       op: op,
       right: right,
       context: context,
@@ -777,9 +777,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> BinaryOpExpr {
+  ) throws -> BinaryOpExpr {
     return BinaryOpExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       op: op,
       left: left,
       right: right,
@@ -798,9 +798,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> BoolOpExpr {
+  ) throws -> BoolOpExpr {
     return BoolOpExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       op: op,
       left: left,
       right: right,
@@ -818,9 +818,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> CompareExpr {
+  ) throws -> CompareExpr {
     return CompareExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       left: left,
       elements: elements,
       context: context,
@@ -836,9 +836,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> TupleExpr {
+  ) throws -> TupleExpr {
     return TupleExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       elements: elements,
       context: context,
       start: start,
@@ -853,9 +853,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ListExpr {
+  ) throws -> ListExpr {
     return ListExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       elements: elements,
       context: context,
       start: start,
@@ -870,9 +870,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> DictionaryExpr {
+  ) throws -> DictionaryExpr {
     return DictionaryExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       elements: elements,
       context: context,
       start: start,
@@ -887,9 +887,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> SetExpr {
+  ) throws -> SetExpr {
     return SetExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       elements: elements,
       context: context,
       start: start,
@@ -906,9 +906,9 @@ public struct ASTBuilder {
     isAsync: Bool,
     start: SourceLocation,
     end: SourceLocation
-  ) -> Comprehension {
+  ) throws -> Comprehension {
     return Comprehension(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       target: target,
       iterable: iterable,
       ifs: ifs,
@@ -926,9 +926,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> ListComprehensionExpr {
+  ) throws -> ListComprehensionExpr {
     return ListComprehensionExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       element: element,
       generators: generators,
       context: context,
@@ -945,9 +945,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> SetComprehensionExpr {
+  ) throws -> SetComprehensionExpr {
     return SetComprehensionExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       element: element,
       generators: generators,
       context: context,
@@ -965,9 +965,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> DictionaryComprehensionExpr {
+  ) throws -> DictionaryComprehensionExpr {
     return DictionaryComprehensionExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       key: key,
       value: value,
       generators: generators,
@@ -985,9 +985,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> GeneratorExpr {
+  ) throws -> GeneratorExpr {
     return GeneratorExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       element: element,
       generators: generators,
       context: context,
@@ -1003,9 +1003,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AwaitExpr {
+  ) throws -> AwaitExpr {
     return AwaitExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -1020,9 +1020,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> YieldExpr {
+  ) throws -> YieldExpr {
     return YieldExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -1037,9 +1037,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> YieldFromExpr {
+  ) throws -> YieldFromExpr {
     return YieldFromExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       value: value,
       context: context,
       start: start,
@@ -1055,9 +1055,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> LambdaExpr {
+  ) throws -> LambdaExpr {
     return LambdaExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       args: args,
       body: body,
       context: context,
@@ -1075,9 +1075,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> CallExpr {
+  ) throws -> CallExpr {
     return CallExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       function: function,
       args: args,
       keywords: keywords,
@@ -1095,9 +1095,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> AttributeExpr {
+  ) throws -> AttributeExpr {
     return AttributeExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       object: object,
       name: name,
       context: context,
@@ -1112,9 +1112,9 @@ public struct ASTBuilder {
     kind: Slice.Kind,
     start: SourceLocation,
     end: SourceLocation
-  ) -> Slice {
+  ) throws -> Slice {
     return Slice(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       kind: kind,
       start: start,
       end: end
@@ -1129,9 +1129,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> SubscriptExpr {
+  ) throws -> SubscriptExpr {
     return SubscriptExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       object: object,
       slice: slice,
       context: context,
@@ -1149,9 +1149,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> IfExpr {
+  ) throws -> IfExpr {
     return IfExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       test: test,
       body: body,
       orElse: orElse,
@@ -1168,9 +1168,9 @@ public struct ASTBuilder {
     context: ExpressionContext,
     start: SourceLocation,
     end: SourceLocation
-  ) -> StarredExpr {
+  ) throws -> StarredExpr {
     return StarredExpr(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       expression: expression,
       context: context,
       start: start,
@@ -1190,9 +1190,9 @@ public struct ASTBuilder {
     kwarg: Argument?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> Arguments {
+  ) throws -> Arguments {
     return Arguments(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       args: args,
       posOnlyArgCount: posOnlyArgCount,
       defaults: defaults,
@@ -1212,9 +1212,9 @@ public struct ASTBuilder {
     annotation: Expression?,
     start: SourceLocation,
     end: SourceLocation
-  ) -> Argument {
+  ) throws -> Argument {
     return Argument(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       name: name,
       annotation: annotation,
       start: start,
@@ -1229,9 +1229,9 @@ public struct ASTBuilder {
     value: Expression,
     start: SourceLocation,
     end: SourceLocation
-  ) -> KeywordArgument {
+  ) throws -> KeywordArgument {
     return KeywordArgument(
-      id: self.getNextId(),
+      id: try self.getNextId(),
       kind: kind,
       value: value,
       start: start,

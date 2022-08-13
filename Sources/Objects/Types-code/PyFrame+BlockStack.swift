@@ -122,12 +122,12 @@ extension PyFrame {
 
     /// void
     /// PyFrame_BlockSetup(PyFrameObject *f, int type, int handler, int level)
-    public func push(_ block: Block) {
+    public func push(_ block: Block) throws {
       let count = self.count
       let bufferCount = self.buffer.count
 
       guard count + 1 <= bufferCount else {
-        trap("Block stack overflow")
+        try trap("Block stack overflow")
       }
 
       self.endPointer.pointee = block

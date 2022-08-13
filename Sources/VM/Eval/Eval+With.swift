@@ -41,7 +41,7 @@ extension Eval {
         kind: .setupFinally(finallyStartLabelIndex: afterBodyLabelIndex),
         stackCount: self.stack.count
       )
-      self.blockStack.push(block)
+      try! self.blockStack.push(block)
 
       self.stack.push(res)
       return .ok
@@ -132,7 +132,7 @@ extension Eval {
       assert(block.isExceptHandler)
       let levelWithoutExit = block.stackCount - 1
       let blockWithoutExit = PyFrame.Block(kind: .exceptHandler, stackCount: levelWithoutExit)
-      self.blockStack.push(blockWithoutExit)
+      try! self.blockStack.push(blockWithoutExit)
 
     case .silenced:
       __exit__ = self.stack.pop()

@@ -118,7 +118,7 @@ extension Py {
       guard let next = result.getNext() else {
         // CPython has to check for 'tb != NULL' because that is how they deal
         // with 'limit <= 0'.
-        trap("'depth' was supposed to be > 'limit', so no idea how we arrived here")
+        try! trap("'depth' was supposed to be > 'limit', so no idea how we arrived here")
       }
 
       depth -= 1

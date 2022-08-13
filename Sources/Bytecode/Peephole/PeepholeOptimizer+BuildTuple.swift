@@ -14,10 +14,10 @@ extension PeepholeOptimizer {
   /// Replace `BUILD_SEQN 3 UNPACK_SEQN 3` with `ROT3 ROT2`.
   internal func optimizeBuildTuple(result: inout OptimizationResult,
                                    buildTuple: PeepholeInstruction,
-                                   arg: UInt8) {
+                                   arg: UInt8) throws {
     let elementCount = buildTuple.getArgument(instructionArg: arg)
 
-    if self.mergeTupleOfConstants(result: &result,
+    if try self.mergeTupleOfConstants(result: &result,
                                   buildTuple: buildTuple,
                                   elementCount: elementCount) {
       // We can't continue on this path because 'buildTuple' is now 'loadConst'
@@ -34,7 +34,7 @@ extension PeepholeOptimizer {
   /// `loadConst; loadConst; buildTuple 2` -> just use constant tuple.
   private func mergeTupleOfConstants(result: inout OptimizationResult,
                                      buildTuple: PeepholeInstruction,
-                                     elementCount: Int) -> Bool {
+                                     elementCount: Int) throws -> Bool {
     guard elementCount > 0 else {
       return false
     }
@@ -46,7 +46,7 @@ extension PeepholeOptimizer {
     }
 
     let constantIndex = result.constants.count
-    let constantIndexSplit = CodeObjectBuilder.splitExtendedArg(constantIndex)
+    let constantIndexSplit = try CodeObjectBuilder.splitExtendedArg(constantIndex)
 
     // Do we have enough space to emit the instruction?
     // We always have at least 2 slots (from 'loadConst' and 'buildTuple').

@@ -18,9 +18,9 @@ extension PeepholeOptimizer {
   /// ```
   internal func optimizeJumpIfOrPop(result: inout OptimizationResult,
                                     jumpIfOrPop: PeepholeInstruction,
-                                    arg: UInt8) -> Int? {
+                                    arg: UInt8) throws -> Int? {
     let labelIndex = jumpIfOrPop.getArgument(instructionArg: arg)
-    if let replacedInstructionIndex = self.simplifyJumpToConditionalJump(
+    if let replacedInstructionIndex = try self.simplifyJumpToConditionalJump(
       result: &result,
       jumpIfOrPop: jumpIfOrPop,
       labelIndex: labelIndex
@@ -28,7 +28,7 @@ extension PeepholeOptimizer {
       return replacedInstructionIndex
     }
 
-    self.optimizeJumps(result: &result,
+    try self.optimizeJumps(result: &result,
                        instruction: jumpIfOrPop,
                        arg: arg)
 
@@ -37,7 +37,7 @@ extension PeepholeOptimizer {
 
   private func simplifyJumpToConditionalJump(result: inout OptimizationResult,
                                              jumpIfOrPop: PeepholeInstruction,
-                                             labelIndex: Int) -> Int? {
+                                             labelIndex: Int) throws -> Int? {
     let label = result.labels[labelIndex]
     let targetIndex = label.instructionIndex
 
@@ -113,7 +113,7 @@ extension PeepholeOptimizer {
       result.labels.append(CodeObject.Label(instructionIndex: index))
     }
 
-    return self.write(result: &result,
+    return try self.write(result: &result,
                       oldInstruction: jumpIfOrPop,
                       newCondition: jumpCondition,
                       newKind: jumpKind,
@@ -153,8 +153,8 @@ extension PeepholeOptimizer {
                      oldInstruction: PeepholeInstruction,
                      newCondition: Bool,
                      newKind: JumpKind,
-                     newLabelIndex: Int) -> Int? {
-    let newLabelIndexSplit = CodeObjectBuilder.splitExtendedArg(newLabelIndex)
+                     newLabelIndex: Int) throws -> Int? {
+    let newLabelIndexSplit = try CodeObjectBuilder.splitExtendedArg(newLabelIndex)
 
     let oldInstructionCount = oldInstruction.instructionCount
     let newInstructionCount = newLabelIndexSplit.count

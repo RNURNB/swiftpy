@@ -65,8 +65,8 @@ public final class CodeObjectBuilder {
   /// Create `CodeObject`.
   ///
   /// Read as `finalise` if you like tea.
-  public func finalize() -> CodeObject {
-    return self.finalize(usePeepholeOptimizer: true)
+  public func finalize() throws -> CodeObject {
+    return try self.finalize(usePeepholeOptimizer: true)
   }
 
   /// Create `CodeObject`.
@@ -79,7 +79,7 @@ public final class CodeObjectBuilder {
                          names:[String]?=nil, 
                          variableNames: [MangledName]?=nil, 
                          freeVariableNames: [MangledName]?=nil,
-                         cellVariableNames: [MangledName]?=nil) -> CodeObject {
+                         cellVariableNames: [MangledName]?=nil) throws -> CodeObject {
     // swiftlint:disable:previous function_body_length
 
     self.assertAllLabelsAssigned()
@@ -95,7 +95,7 @@ public final class CodeObjectBuilder {
                                         constants: self.constants,
                                         labels: self.labels)
 
-      let result = optimizer.run()
+      let result = try optimizer.run()
       instructions = result.instructions
       instructionLines = result.instructionLines
       constants = result.constants
@@ -168,15 +168,15 @@ public final class CodeObjectBuilder {
   /// Use when using label (from `self.labels`) index as instruction arg.
   internal func appendExtendedArgsForLabelIndex(
     _ notAssigned: NotAssignedLabel
-  ) -> UInt8 {
-    return self.appendExtendedArgIfNeeded(notAssigned.labelIndex)
+  ) throws -> UInt8 {
+    return try self.appendExtendedArgIfNeeded(notAssigned.labelIndex)
   }
 
   // MARK: - Name
 
   /// Use when using name index as instruction arg.
   /// If the name was not previously used then it will be added.
-  internal func appendExtendedArgsForNameIndex(name: String) -> UInt8 {
+  internal func appendExtendedArgsForNameIndex(name: String) throws -> UInt8 {
     let index: Int = {
       let cacheKey = UseScalarsToHashString(name)
 
@@ -190,7 +190,7 @@ public final class CodeObjectBuilder {
       return index
     }()
 
-    return self.appendExtendedArgIfNeeded(index)
+    return try self.appendExtendedArgIfNeeded(index)
   }
 
   // MARK: - Variable/Cell/Free names
@@ -199,36 +199,36 @@ public final class CodeObjectBuilder {
   /// as instruction arg.
   internal func appendExtendedArgsForVariableNameIndex(
     name: MangledName
-  ) -> UInt8 {
+  ) throws -> UInt8 {
     if let index = self.cache.variableNames[name] {
-      return self.appendExtendedArgIfNeeded(index)
+      return try self.appendExtendedArgIfNeeded(index)
     }
 
-    self.trapMissingVariableName(name: name, type: .variable)
+    try self.trapMissingVariableName(name: name, type: .variable)
   }
 
   /// Use when using cell name (from `self.cellVariableNames`) index
   /// as instruction arg.
   internal func appendExtendedArgsForCellVariableNameIndex(
     name: MangledName
-  ) -> UInt8 {
+  ) throws -> UInt8 {
     if let index = self.cache.cellVariableNames[name] {
-      return self.appendExtendedArgIfNeeded(index)
+      return try self.appendExtendedArgIfNeeded(index)
     }
 
-    self.trapMissingVariableName(name: name, type: .cell)
+    try self.trapMissingVariableName(name: name, type: .cell)
   }
 
   /// Use when using free name (from `self.freeVariableNames`) index
   /// as instruction arg.
   internal func appendExtendedArgsForFreeVariableNameIndex(
     name: MangledName
-  ) -> UInt8 {
+  ) throws -> UInt8 {
     if let index = self.cache.freeVariableNames[name] {
-      return self.appendExtendedArgIfNeeded(index)
+      return try self.appendExtendedArgIfNeeded(index)
     }
 
-    self.trapMissingVariableName(name: name, type: .free)
+    try self.trapMissingVariableName(name: name, type: .free)
   }
 
   private enum VariableType: String {
@@ -238,7 +238,7 @@ public final class CodeObjectBuilder {
   }
 
   private func trapMissingVariableName(name: MangledName,
-                                       type: VariableType) -> Never {
+                                       type: VariableType) throws -> Never {
     let allowedNames: [MangledName]
     switch type {
     case .variable: allowedNames = self.variableNames
@@ -257,7 +257,7 @@ public final class CodeObjectBuilder {
       msg += " (in fact it contains no such variables)."
     }
 
-    trap(msg)
+    try trap(msg)
   }
 
   // MARK: - Extended arg
@@ -274,8 +274,8 @@ public final class CodeObjectBuilder {
   /// ```
   /// - Returns:
   /// Value that should be used in instruction.
-  internal func appendExtendedArgIfNeeded(_ arg: Int) -> UInt8 {
-    let split = Self.splitExtendedArg(arg)
+  internal func appendExtendedArgIfNeeded(_ arg: Int) throws -> UInt8 {
+    let split = try Self.splitExtendedArg(arg)
 
     if let arg = split.extendedArg0 {
       self.appendExtendedArg(value: arg)
@@ -311,10 +311,10 @@ public final class CodeObjectBuilder {
     }
   }
 
-  internal static func splitExtendedArg(_ arg: Int) -> ExtendedArgSplit {
+  internal static func splitExtendedArg(_ arg: Int) throws -> ExtendedArgSplit {
     assert(arg >= 0)
     if arg > Instruction.maxExtendedArgument3 {
-      trap(
+      try trap(
         "Cannot create instruction with argument greater than " +
         "'\(Instruction.maxExtendedArgument3)'."
       )

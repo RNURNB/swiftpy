@@ -123,7 +123,7 @@ extension Sys {
     case .ok:
       break
     case .error(let e):
-      trap("Error when inserting '\(name)' to 'sys.\(property)': \(e)")
+      try! trap("Error when inserting '\(name)' to 'sys.\(property)': \(e)")
     }
   }
 }

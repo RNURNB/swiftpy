@@ -36,7 +36,7 @@ extension VM {
   /// And also:
   /// static void
   /// pymain_run_python(_PyMain *pymain)
-  public func run() -> RunResult {
+  public func run() throws -> RunResult {
     let arguments = self.py.config.arguments
 
     if arguments.help {
@@ -65,9 +65,9 @@ extension VM {
     var result: PyResult
 
     if let command = arguments.command {
-      result = self.run(command: command)
+      result = try self.run(command: command)
     } else if let module = arguments.module {
-      result = self.run(modulePath: module)
+      result = try self.run(modulePath: module)
     } else if let script = arguments.script {
       result = self.run(scriptPath: script)
     } else {

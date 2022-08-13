@@ -80,7 +80,7 @@ extension Parser {
 
     let firstToken = self.peek
     let firstId = try self.consumeIdentifierOrThrow()
-    let first = self.builder.identifierExpr(value: firstId,
+    let first = try self.builder.identifierExpr(value: firstId,
                                             context: .load,
                                             start: firstToken.start,
                                             end: firstToken.end)
@@ -92,7 +92,7 @@ extension Parser {
       let end = self.peek.end
       let id = try self.consumeIdentifierOrThrow()
 
-      result = self.builder.attributeExpr(object: result,
+      result = try self.builder.attributeExpr(object: result,
                                           name: id,
                                           context: .load,
                                           start: result.start,
@@ -115,7 +115,7 @@ extension Parser {
       let end = self.peek.end
       try self.advance() // )
 
-      return self.builder.callExpr(function: left,
+      return try self.builder.callExpr(function: left,
                                    args: [],
                                    keywords: [],
                                    context: .load,
@@ -128,7 +128,7 @@ extension Parser {
     let end = self.peek.end
     try self.consumeOrThrow(.rightParen)
 
-    return self.builder.callExpr(function: left,
+    return try self.builder.callExpr(function: left,
                                  args: ir.args,
                                  keywords: ir.keywords,
                                  context: .load,

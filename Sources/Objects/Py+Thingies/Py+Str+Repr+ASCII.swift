@@ -244,7 +244,7 @@ extension Py {
       // 'object' has default implementation for '__str__',
       // if we did not find it then something went really wrong.
       let typeName = type.getNameString()
-      trap("'\(typeName)' is not a subclass of 'object'?")
+      try! trap("'\(typeName)' is not a subclass of 'object'?")
     }
 
     let isFromObject = lookup.type === self.types.object

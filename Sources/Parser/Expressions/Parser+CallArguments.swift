@@ -135,7 +135,7 @@ extension Parser {
     try self.advance() // *
 
     let test = try self.test(context: .load)
-    let expr = self.builder.starredExpr(expression: test,
+    let expr = try self.builder.starredExpr(expression: test,
                                         context: .load,
                                         start: start,
                                         end: test.end)
@@ -149,7 +149,7 @@ extension Parser {
     try self.advance() // **
 
     let test = try self.test(context: .load)
-    let keyword = self.builder.keywordArgument(kind: .dictionaryUnpack,
+    let keyword = try self.builder.keywordArgument(kind: .dictionaryUnpack,
                                                value: test,
                                                start: start,
                                                end: test.end)
@@ -175,7 +175,7 @@ extension Parser {
       }
 
       let value = try self.test(context: .load)
-      let keyword = self.builder.keywordArgument(kind: .named(name),
+      let keyword = try self.builder.keywordArgument(kind: .named(name),
                                                  value: value,
                                                  start: nameToken.start,
                                                  end: value.end)
@@ -232,7 +232,7 @@ extension Parser {
       }
 
       let end = generators.last?.end ?? test.end
-      let expr = self.builder.generatorExpr(element: test,
+      let expr = try self.builder.generatorExpr(element: test,
                                             generators: generators,
                                             context: .load,
                                             start: test.start,

@@ -49,14 +49,14 @@ public class AST: ASTNode, CustomStringConvertible {
   public func accept<V: ASTVisitor>(
       _ visitor: V
   ) throws -> V.ASTResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 
   public func accept<V: ASTVisitorWithPayload>(
       _ visitor: V,
       payload: V.ASTPayload
   ) throws -> V.ASTResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 }
 
@@ -164,6 +164,15 @@ public final class ExpressionAST: AST {
   }
 }
 
+open class ASTIdentifier {
+    public var name:String
+    public var isFunc:Bool=false
+    
+    public init(name: String) {
+        self.name=name
+    }
+}
+
 // MARK: - Statement
 
 /// Syntactic unit that expresses some action to be carried out.
@@ -200,14 +209,14 @@ public class Statement: ASTNode, CustomStringConvertible {
   public func accept<V: StatementVisitor>(
       _ visitor: V
   ) throws -> V.StatementResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 
   public func accept<V: StatementVisitorWithPayload>(
       _ visitor: V,
       payload: V.StatementPayload
   ) throws -> V.StatementResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 }
 
@@ -227,6 +236,8 @@ public final class FunctionDefStmt: Statement {
   public var decorators: [Expression]
   /// `returns` is the return annotation (the thing after '->').
   public var returns: Expression?
+  
+  public var identifier: ASTIdentifier?=nil
 
   public init(
     id: ASTNodeId,
@@ -276,6 +287,8 @@ public final class AsyncFunctionDefStmt: Statement {
   public var decorators: [Expression]
   /// `returns` is the return annotation (the thing after '->').
   public var returns: Expression?
+  
+  public var identifier: ASTIdentifier?=nil
 
   public init(
     id: ASTNodeId,
@@ -1365,14 +1378,14 @@ public class Expression: ASTNode, CustomStringConvertible {
   public func accept<V: ExpressionVisitor>(
       _ visitor: V
   ) throws -> V.ExpressionResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 
   public func accept<V: ExpressionVisitorWithPayload>(
       _ visitor: V,
       payload: V.ExpressionPayload
   ) throws -> V.ExpressionResult {
-    trap("'accept' method should be overridden in subclass")
+    try trap("'accept' method should be overridden in subclass")
   }
 }
 
@@ -1505,6 +1518,8 @@ extension StringExpr {
 public final class IdentifierExpr: Expression {
 
   public var value: String
+  public var identifier: ASTIdentifier?=nil
+  public var forceVar: Bool=false
 
   public init(
     id: ASTNodeId,
@@ -2809,6 +2824,8 @@ public struct Argument: ASTNode, CustomStringConvertible {
   public var start: SourceLocation
   /// Location just after the last character in the source code.
   public var end: SourceLocation
+  
+  public var identifier: ASTIdentifier?=nil
 
   public var description: String {
     let printer = ASTPrinter()

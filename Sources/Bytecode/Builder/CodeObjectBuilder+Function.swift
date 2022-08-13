@@ -12,14 +12,14 @@ extension CodeObjectBuilder {
   // MARK: - Call function
 
   /// Append a `callFunction` instruction to this code object.
-  public func appendCallFunction(argumentCount: Int) {
-    let arg = self.appendExtendedArgIfNeeded(argumentCount)
+  public func appendCallFunction(argumentCount: Int) throws {
+    let arg = try self.appendExtendedArgIfNeeded(argumentCount)
     self.append(.callFunction(argumentCount: arg))
   }
 
   /// Append a `callFunctionKw` instruction to this code object.
-  public func appendCallFunctionKw(argumentCount: Int) {
-    let arg = self.appendExtendedArgIfNeeded(argumentCount)
+  public func appendCallFunctionKw(argumentCount: Int) throws {
+    let arg = try self.appendExtendedArgIfNeeded(argumentCount)
     self.append(.callFunctionKw(argumentCount: arg))
   }
 
@@ -31,16 +31,16 @@ extension CodeObjectBuilder {
   // MARK: - Load method
 
   /// Append a `loadMethod` instruction to this code object.
-  public func appendLoadMethod(name: String) {
-    let arg = self.appendExtendedArgsForNameIndex(name: name)
+  public func appendLoadMethod(name: String) throws {
+    let arg = try self.appendExtendedArgsForNameIndex(name: name)
     self.append(.loadMethod(nameIndex: arg))
   }
 
   // MARK: - Call method
 
   /// Append a `callMethod` instruction to this code object.
-  public func appendCallMethod(argumentCount: Int) {
-    let arg = self.appendExtendedArgIfNeeded(argumentCount)
+  public func appendCallMethod(argumentCount: Int) throws {
+    let arg = try self.appendExtendedArgIfNeeded(argumentCount)
     self.append(.callMethod(argumentCount: arg))
   }
 

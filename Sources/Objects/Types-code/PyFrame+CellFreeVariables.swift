@@ -58,13 +58,13 @@ extension PyFrame {
       // Everything will be taken from 'closure' in 'self.fill'
     }
 
-    public func fill(_ py: Py, code: PyCode, closure: PyTuple?) {
+    public func fill(_ py: Py, code: PyCode, closure: PyTuple?) throws {
       let closure = closure?.elements ?? []
       assert(closure.count == code.freeVariableCount)
 
       for (index, object) in closure.enumerated() {
         guard let cell = py.cast.asCell(object) else {
-          trap("Closure can only contain cells, not '\(object.typeName)'.")
+          try trap("Closure can only contain cells, not '\(object.typeName)'.")
         }
 
         self.ptr[index] = cell

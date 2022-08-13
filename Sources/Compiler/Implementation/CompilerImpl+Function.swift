@@ -74,10 +74,10 @@ extension CompilerImpl {
     try self.makeClosure(codeObject: codeObject, flags: flags, location: location)
 
     for _ in node.decorators {
-      self.builder.appendCallFunction(argumentCount: 1)
+      try self.builder.appendCallFunction(argumentCount: 1)
     }
 
-    self.visitName(name: node.name, context: .store)
+    try self.visitName(name: node.name, context: .store)
   }
 
   // MARK: - Decorators
@@ -97,7 +97,7 @@ extension CompilerImpl {
     if args.defaults.any {
       flags.formUnion(.hasPositionalArgDefaults)
       try self.visit(args.defaults)
-      self.builder.appendBuildTuple(elementCount: args.defaults.count)
+      try self.builder.appendBuildTuple(elementCount: args.defaults.count)
     }
 
     if args.kwOnlyArgs.any {
@@ -129,8 +129,8 @@ extension CompilerImpl {
     if names.any {
       flags.formUnion(.hasKwOnlyArgDefaults)
       let elements = names.map { CodeObject.Constant.string($0.value) }
-      self.builder.appendTuple(elements)
-      self.builder.appendBuildConstKeyMap(elementCount: names.count)
+      try self.builder.appendTuple(elements)
+      try self.builder.appendBuildConstKeyMap(elementCount: names.count)
     }
   }
 
@@ -172,8 +172,8 @@ extension CompilerImpl {
     if names.any {
       flags.formUnion(.hasAnnotations)
       let elements = names.map { CodeObject.Constant.string($0.value) }
-      self.builder.appendTuple(elements)
-      self.builder.appendBuildConstKeyMap(elementCount: names.count)
+      try self.builder.appendTuple(elements)
+      try self.builder.appendBuildConstKeyMap(elementCount: names.count)
     }
   }
 
@@ -225,27 +225,27 @@ extension CompilerImpl {
         // The local var is a method and the free var is a free var referenced
         // within a method.
 
-        let refType = self.getRefType(name: name, qualifiedName: qualifiedName)
+        let refType = try self.getRefType(name: name, qualifiedName: qualifiedName)
         switch refType.contains(.cell) {
         case true:
-          self.builder.appendLoadClosureCell(name: name)
+          try self.builder.appendLoadClosureCell(name: name)
         case false:
-          self.builder.appendLoadClosureFree(name: name)
+          try self.builder.appendLoadClosureFree(name: name)
         }
       }
 
       let freeVariableCount = codeObject.freeVariableNames.count
-      self.builder.appendBuildTuple(elementCount: freeVariableCount)
+      try self.builder.appendBuildTuple(elementCount: freeVariableCount)
       makeFunctionFlags.formUnion(.hasFreeVariables)
     }
 
-    self.builder.appendCode(codeObject)
-    self.builder.appendString(qualifiedName)
+    try self.builder.appendCode(codeObject)
+    try self.builder.appendString(qualifiedName)
     self.builder.appendMakeFunction(flags: makeFunctionFlags)
   }
 
   private func getRefType(name: MangledName,
-                          qualifiedName: String) -> SymbolInfo.Flags {
+                          qualifiedName: String) throws -> SymbolInfo.Flags {
     // class Princess:
     //     def sing():
     //         __class__
@@ -259,6 +259,6 @@ extension CompilerImpl {
       return scope.flags
     }
 
-    trap("[BUG] Compiler: Unknown scope for '\(name)' inside '\(qualifiedName)'.")
+    try trap("[BUG] Compiler: Unknown scope for '\(name)' inside '\(qualifiedName)'.")
   }
 }

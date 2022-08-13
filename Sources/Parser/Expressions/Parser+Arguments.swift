@@ -34,8 +34,8 @@ private struct ArgumentsIR {
     self.end = end
   }
 
-  fileprivate func compile(using builder: inout ASTBuilder) -> Arguments {
-    return builder.arguments(args: self.args,
+  fileprivate func compile(using builder: inout ASTBuilder) throws -> Arguments {
+    return try builder.arguments(args: self.args,
                              posOnlyArgCount: self.posOnlyArgCount ?? 0,
                              defaults: self.defaults,
                              vararg: self.vararg,
@@ -107,7 +107,7 @@ extension Parser {
     let token = parser.peek
     let name = try parser.consumeIdentifierOrThrow()
     try parser.checkForbiddenName(name, location: token.start)
-    return parser.builder.argument(name: name,
+    return try parser.builder.argument(name: name,
                                    annotation: nil,
                                    start: token.start,
                                    end: token.end)
@@ -127,7 +127,7 @@ extension Parser {
     }
 
     let end = annotation?.end ?? token.end
-    return parser.builder.argument(name: name,
+    return try parser.builder.argument(name: name,
                                    annotation: annotation,
                                    start: token.start,
                                    end: end)
@@ -164,7 +164,7 @@ extension Parser {
       throw self.error(.starWithoutFollowingArguments)
     }
 
-    return ir.compile(using: &self.builder)
+    return try ir.compile(using: &self.builder)
   }
 
   /// `vfpdef/tfpdef ['=' test]`
@@ -199,7 +199,7 @@ extension Parser {
       } else {
         // We will place 'implicit None' just after 'argument'
         let loc = argument.end
-        let implicitNone = self.builder.noneExpr(context: .load, start: loc, end: loc)
+        let implicitNone = try self.builder.noneExpr(context: .load, start: loc, end: loc)
         ir.kwOnlyDefaults.append(implicitNone)
       }
     }

@@ -2,7 +2,7 @@ import Foundation
 
 // cSpell:ignore Anakin Padmé
 
-#if DEBUG
+//#if DEBUG
 
 /// Don't bother reading this, it will never be called.
 ///
@@ -12,7 +12,7 @@ import Foundation
 /// - Padmé: It will never be called, right?
 public func unreachable(file: StaticString = #file,
                         function: StaticString = #function,
-                        line: Int = #line) -> Never {
+                        line: Int = #line) throws -> Never {
   var fileShort = String(describing: file)
 
   if let range = fileShort.range(of: "Sources/") {
@@ -27,13 +27,13 @@ public func unreachable(file: StaticString = #file,
 
   // https://knowyourmeme.com/memes/it-was-me-dio
   let msg = "You expected unreachable, but it me '\(fileShort):\(line)'!"
-  trap(msg, file: file, function: function, line: line)
+  try trap(msg, file: file, function: function, line: line)
 }
 
-#else
+/*#else
 
 public func unreachable() -> Never {
   exit(1)
 }
 
-#endif
+#endif*/

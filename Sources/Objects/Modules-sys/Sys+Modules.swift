@@ -109,7 +109,7 @@ extension Sys {
       switch module.getName(self.py) {
       case let .value(n): name = n
       case let .error(e):
-        trap("Error when inserting '\(module)' to 'sys.builtin_module_names': " +
+        try! trap("Error when inserting '\(module)' to 'sys.builtin_module_names': " +
               "unable to extract module name: \(e).")
       }
 
@@ -117,13 +117,13 @@ extension Sys {
 
       // sys.modules
       if let e = self.addModule(name: name, module: module) {
-        trap("Error when inserting '\(name)' module to 'sys.modules': \(e)")
+        try! trap("Error when inserting '\(name)' module to 'sys.modules': \(e)")
       }
     }
 
     let tuple = self.py.newTuple(elements: builtinModuleNames)
     if let e = self.setBuiltinModuleNames(tuple.asObject) {
-      trap("Error when setting 'sys.builtin_module_names': \(e)")
+      try! trap("Error when setting 'sys.builtin_module_names': \(e)")
     }
   }
 
@@ -133,7 +133,7 @@ extension Sys {
       // If we have any elements -> we called it before.
       return tuple.elements.any
     case let .error(e):
-      trap("Error when checking if 'builtin_module_names' was already filled: \(e)")
+      try! trap("Error when checking if 'builtin_module_names' was already filled: \(e)")
     }
   }
 

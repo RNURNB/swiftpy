@@ -1016,7 +1016,7 @@ extension Py {
         break
       case .error(let e):
         let typeName = type.getNameString()
-        trap("Error when adding '\(name)' to '\(typeName)' type: \(e)")
+        try! trap("Error when adding '\(name)' to '\(typeName)' type: \(e)")
       }
     }
 

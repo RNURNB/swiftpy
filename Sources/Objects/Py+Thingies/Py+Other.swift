@@ -56,7 +56,7 @@ extension Py {
   }
 
   internal func trapMissing__dict__<T: PyObjectMixin>(object: T) -> Never {
-    trap("Expected '\(object.typeName)' to have a dict? Guess not.")
+    try! trap("Expected '\(object.typeName)' to have a dict? Guess not.")
   }
 
   // MARK: - Id

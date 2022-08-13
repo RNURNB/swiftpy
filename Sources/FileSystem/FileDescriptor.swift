@@ -182,7 +182,7 @@ public class FileDescriptor: CustomStringConvertible {
     do {
       return try self._readDataOfLength(Int.max, untilEOF: false)
     } catch {
-      trap("\(error)")
+      try! trap("\(error)")
     }
   }
 

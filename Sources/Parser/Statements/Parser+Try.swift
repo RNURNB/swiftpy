@@ -53,7 +53,7 @@ extension Parser {
       throw self.error(.tryWithElseWithoutExcept, location: start)
     }
 
-    return self.builder.tryStmt(body: body,
+    return try self.builder.tryStmt(body: body,
                                 handlers: ir.handlers,
                                 orElse: ir.orElse,
                                 finally: ir.finally,
@@ -74,7 +74,7 @@ extension Parser {
       try self.consumeOrThrow(.colon)
       let body = try self.suite()
 
-      let handler = self.builder.exceptHandler(kind: kind,
+      let handler = try self.builder.exceptHandler(kind: kind,
                                                body: body,
                                                start: start,
                                                end: body.last.end)

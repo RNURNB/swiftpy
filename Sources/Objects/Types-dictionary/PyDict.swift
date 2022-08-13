@@ -293,7 +293,7 @@ public struct PyDict: PyObjectMixin {
                                  error: PyBaseException) -> Never {
     // TODO: PyDict.idErrorNotHandled
     let repr = py.reprOrGenericString(error.asObject)
-    trap("Dict operation '\(operation)' returned an error: '\(repr)'")
+    try! trap("Dict operation '\(operation)' returned an error: '\(repr)'")
   }
 
   // MARK: - Set

@@ -6,57 +6,57 @@ extension CodeObjectBuilder {
 
   // MARK: - Variables
 
-  internal func appendName(name: MangledName, context: ExpressionContext) {
+  internal func appendName(name: MangledName, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreName(name)
-    case .load: self.appendLoadName(name)
-    case .del: self.appendDeleteName(name)
+    case .store: try self.appendStoreName(name)
+    case .load: try self.appendLoadName(name)
+    case .del: try self.appendDeleteName(name)
     }
   }
 
-  internal func appendGlobal(name: String, context: ExpressionContext) {
+  internal func appendGlobal(name: String, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreGlobal(name)
-    case .load: self.appendLoadGlobal(name)
-    case .del: self.appendDeleteGlobal(name)
+    case .store: try self.appendStoreGlobal(name)
+    case .load: try self.appendLoadGlobal(name)
+    case .del: try self.appendDeleteGlobal(name)
     }
   }
 
-  internal func appendGlobal(name: MangledName, context: ExpressionContext) {
+  internal func appendGlobal(name: MangledName, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreGlobal(name)
-    case .load: self.appendLoadGlobal(name)
-    case .del: self.appendDeleteGlobal(name)
+    case .store: try self.appendStoreGlobal(name)
+    case .load: try self.appendLoadGlobal(name)
+    case .del: try self.appendDeleteGlobal(name)
     }
   }
 
-  internal func appendFast(name: MangledName, context: ExpressionContext) {
+  internal func appendFast(name: MangledName, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreFast(name)
-    case .load: self.appendLoadFast(name)
-    case .del: self.appendDeleteFast(name)
+    case .store: try self.appendStoreFast(name)
+    case .load: try self.appendLoadFast(name)
+    case .del: try self.appendDeleteFast(name)
     }
   }
 
-  internal func appendCell(name: MangledName, context: ExpressionContext) {
+  internal func appendCell(name: MangledName, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreCell(name)
-    case .load: self.appendLoadCell(name)
-    case .del: self.appendDeleteCell(name)
+    case .store: try self.appendStoreCell(name)
+    case .load: try self.appendLoadCell(name)
+    case .del: try self.appendDeleteCell(name)
     }
   }
 
-  internal func appendFree(name: MangledName, context: ExpressionContext) {
+  internal func appendFree(name: MangledName, context: ExpressionContext) throws {
     switch context {
-    case .store: self.appendStoreFree(name)
-    case .load: self.appendLoadFree(name)
-    case .del: self.appendDeleteFree(name)
+    case .store: try self.appendStoreFree(name)
+    case .load: try self.appendLoadFree(name)
+    case .del: try self.appendDeleteFree(name)
     }
   }
 
   // MARK: - Operators
 
-  internal func appendUnaryOperator(_ op: UnaryOpExpr.Operator) {
+  internal func appendUnaryOperator(_ op: UnaryOpExpr.Operator) throws {
     switch op {
     case .invert: self.appendUnaryInvert()
     case .not: self.appendUnaryNot()

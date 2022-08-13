@@ -221,8 +221,8 @@ extension Py {
       // there is no need to support full module with '__init__' etc.
       switch stat.type {
       case .regularFile: return .value(modulePath)
-      case .directory: trap("Ooo… 'importlib' is now a directory?")
-      default: trap("Unsupported 'importlib' type '\(stat.type)'.")
+      case .directory: try! trap("Ooo… 'importlib' is now a directory?")
+      default: try! trap("Unsupported 'importlib' type '\(stat.type)'.")
       }
     }
 

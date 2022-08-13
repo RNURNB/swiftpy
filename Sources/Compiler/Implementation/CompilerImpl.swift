@@ -50,13 +50,13 @@ internal final class CompilerImpl: ASTVisitor, StatementVisitor, ExpressionVisit
   /// Code object builder for `self.codeObject`.
   internal var builder: CodeObjectBuilder {
     if let last = self.unitStack.last { return last.builder }
-    trap("[BUG] Compiler: Using `builder` with empty `unitStack`.")
+    try! trap("[BUG] Compiler: Using `builder` with empty `unitStack`.")
   }
 
   /// Scope that we are currently filling.
   internal var currentScope: SymbolScope {
     if let last = self.unitStack.last { return last.scope }
-    trap("[BUG] Compiler: Using `currentScope` with empty `unitStack`.")
+    try! trap("[BUG] Compiler: Using `currentScope` with empty `unitStack`.")
   }
 
   /// How far are we inside module/class/function scopes.
@@ -163,8 +163,8 @@ internal final class CompilerImpl: ASTVisitor, StatementVisitor, ExpressionVisit
     if let doc = first.getDocString(), self.options.optimizationLevel < .OO {
       switch onDoc {
       case .storeAs__doc__:
-        self.builder.appendString(doc)
-        self.builder.appendStoreName(SpecialIdentifiers.__doc__)
+        try self.builder.appendString(doc)
+        try self.builder.appendStoreName(SpecialIdentifiers.__doc__)
         try self.visit(body.dropFirst())
         return
       case .appendToConstants:
@@ -284,7 +284,7 @@ internal final class CompilerImpl: ASTVisitor, StatementVisitor, ExpressionVisit
     }
 
     if addNone {
-      self.builder.appendNone()
+      try self.builder.appendNone()
     }
 
     self.builder.appendReturn()

@@ -30,11 +30,11 @@ extension CompilerImpl {
       assert(self.builder.kind == .class)
 
       // load (global) __name__ and store it as __module__
-      self.builder.appendLoadName(SpecialIdentifiers.__name__)
-      self.builder.appendStoreName(SpecialIdentifiers.__module__)
+      try self.builder.appendLoadName(SpecialIdentifiers.__name__)
+      try self.builder.appendStoreName(SpecialIdentifiers.__module__)
 
-      self.builder.appendString(self.builder.qualifiedName)
-      self.builder.appendStoreName(SpecialIdentifiers.__qualname__)
+      try self.builder.appendString(self.builder.qualifiedName)
+      try self.builder.appendStoreName(SpecialIdentifiers.__qualname__)
 
       try self.visitBody(body: node.body, onDoc: .storeAs__doc__)
 
@@ -44,12 +44,12 @@ extension CompilerImpl {
         let __classcell__ = SpecialIdentifiers.__classcell__
 
         // Store __classcell__ into class namespace & return it
-        self.builder.appendLoadClosureCell(name: __class__)
+        try self.builder.appendLoadClosureCell(name: __class__)
         self.builder.appendDupTop()
-        self.builder.appendStoreName(__classcell__)
+        try self.builder.appendStoreName(__classcell__)
       } else {
         assert(self.builder.cellVariableNames.isEmpty)
-        self.builder.appendNone()
+        try self.builder.appendNone()
       }
 
       self.builder.appendReturn()
@@ -62,7 +62,7 @@ extension CompilerImpl {
     try self.makeClosure(codeObject: codeObject, flags: [], location: location)
 
     // 4. load class name
-    self.builder.appendString(node.name)
+    try self.builder.appendString(node.name)
 
     // 5. generate the rest of the code for the call
     try self.callHelper(args: node.bases,
@@ -72,10 +72,10 @@ extension CompilerImpl {
 
     // 6. apply decorators
     for _ in node.decorators {
-      self.builder.appendCallFunction(argumentCount: 1)
+      try self.builder.appendCallFunction(argumentCount: 1)
     }
 
     // 7. store into <name>
-    self.visitName(name: node.name, context: .store)
+    try self.visitName(name: node.name, context: .store)
   }
 }

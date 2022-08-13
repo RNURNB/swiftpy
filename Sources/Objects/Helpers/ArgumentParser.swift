@@ -139,7 +139,7 @@ internal struct ArgumentParser {
     case let .value(parser):
       return parser
     case let .error(message):
-      trap(message)
+      try! trap(message)
     }
   }
 

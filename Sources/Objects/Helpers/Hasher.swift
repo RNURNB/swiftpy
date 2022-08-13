@@ -161,7 +161,7 @@ internal struct Hasher {
     // But I don't really have time to look at this more closely.
     var fingersCrossedForNoAllocation = value
     let hash = fingersCrossedForNoAllocation.withUTF8 { ptr in
-      SipHash.hash(key0: self.key0, key1: self.key1, bytes: ptr)
+      try! SipHash.hash(key0: self.key0, key1: self.key1, bytes: ptr)
     }
 
     return self.toPyHash(hash)
@@ -177,7 +177,7 @@ internal struct Hasher {
     //
     // Note that 'withContiguousStorageIfAvailable' will always fail.
     let hash = value.withUnsafeBytes { ptr in
-      SipHash.hash(key0: self.key0, key1: self.key1, bytes: ptr)
+      try! SipHash.hash(key0: self.key0, key1: self.key1, bytes: ptr)
     }
 
     return self.toPyHash(hash)

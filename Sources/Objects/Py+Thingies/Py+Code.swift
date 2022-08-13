@@ -314,7 +314,7 @@ extension Py {
     cells.fill(code: code, fastLocals: fastLocals)
 
     let free = frame.freeVariables
-    free.fill(self, code: code, closure: closure)
+    try! free.fill(self, code: code, closure: closure)
 
     return .value(frame)
   }

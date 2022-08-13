@@ -99,7 +99,7 @@ public final class SymbolScope {
       set {
         // We don't need removal operation, but we want fancy subscript syntax.
         guard let newValue = newValue else {
-          trap("Symbol removal was not implemented.")
+          try! trap("Symbol removal was not implemented.")
         }
 
         let oldValue = self.dict.updateValue(newValue, forKey: name)
@@ -127,7 +127,7 @@ public final class SymbolScope {
 
         let name = self.list[index]
         guard let info = self.dict[name] else {
-          trap("[SymbolByNameDictionary] Missing '\(name)' in dictionary.")
+          try! trap("[SymbolByNameDictionary] Missing '\(name)' in dictionary.")
         }
 
         return (name, info)

@@ -116,7 +116,7 @@ extension PyList {
     } catch let SortError.wrapper(e) {
       return e
     } catch {
-      trap("Unexpected error type in PyList.sort: \(error)")
+      try! trap("Unexpected error type in PyList.sort: \(error)")
     }
   }
 

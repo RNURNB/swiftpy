@@ -13,36 +13,36 @@ extension Eval {
   /// - generator object with the `CoIterableCoroutine` flag
   /// - `o.Await`
   internal func getAwaitable() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   /// Implements `TOS = TOS.AIter()`.
   internal func getAIter() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   /// Implements `Push(GetAwaitable(TOS.ANext()))`.
   /// See `GetAwaitable` for details.
   internal func getANext() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   // MARK: - Generators
 
   /// Pops TOS and yields it from a generator.
   internal func yieldValue() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   /// Pops TOS and delegates to it as a subiterator from a generator.
   internal func yieldFrom() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   /// If TOS is a generator iterator or coroutine object then it is left as is.
   /// Otherwise, implements `TOS = iter(TOS)`.
   internal func getYieldFromIter() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   // MARK: - With
@@ -50,12 +50,12 @@ extension Eval {
   /// Resolves `AEnter` and `AExit` from the object on top of the stack.
   /// Pushes `AExit` and result of `AEnter()` to the stack.
   internal func beforeAsyncWith() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   /// Creates a new frame object.
   internal func setupAsyncWith() -> InstructionResult {
-    self.unimplemented()
+    try! self.unimplemented()
   }
 
   // MARK: - Format
@@ -69,7 +69,7 @@ extension Eval {
         .empty:
       return self.py.str(object)
     case .string:
-      self.unimplemented()
+      try! self.unimplemented()
     case .error(let e):
       return .error(e)
     }
@@ -108,7 +108,7 @@ extension Eval {
 
   // MARK: - Unimplemented
 
-  private func unimplemented(fn: StaticString = #function) -> Never {
-    trap("NOT IMPLEMENTED: '\(fn)'")
+  private func unimplemented(fn: StaticString = #function) throws -> Never {
+    try trap("NOT IMPLEMENTED: '\(fn)'")
   }
 }

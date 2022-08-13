@@ -13,14 +13,14 @@ extension CodeObjectBuilder {
   }
 
   /// Append a `setupExcept` instruction to this code object.
-  public func appendSetupExcept(firstExcept: NotAssignedLabel) {
-    let arg = self.appendExtendedArgsForLabelIndex(firstExcept)
+  public func appendSetupExcept(firstExcept: NotAssignedLabel) throws {
+    let arg = try self.appendExtendedArgsForLabelIndex(firstExcept)
     self.append(.setupExcept(firstExceptLabelIndex: arg))
   }
 
   /// Append a `setupFinally` instruction to this code object.
-  public func appendSetupFinally(finallyStart: NotAssignedLabel) {
-    let arg = self.appendExtendedArgsForLabelIndex(finallyStart)
+  public func appendSetupFinally(finallyStart: NotAssignedLabel) throws {
+    let arg = try self.appendExtendedArgsForLabelIndex(finallyStart)
     self.append(.setupFinally(finallyStartLabelIndex: arg))
   }
 

@@ -154,6 +154,6 @@ extension UnderscoreImp {
   /// Some methods are implemented partially
   /// In such cases they will call this method.
   internal static func unimplemented(fn: String = #function) -> Never {
-    trap("'\(fn)' is not implemented")
+    try! trap("'\(fn)' is not implemented")
   }
 }

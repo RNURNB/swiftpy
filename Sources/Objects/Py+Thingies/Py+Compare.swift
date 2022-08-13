@@ -151,7 +151,7 @@ extension CompareOp {
     case .notImplemented:
       return .notImplemented(py)
     case .invalidSelfArgument:
-      trap("Compare inside 'PyObject' should accept all objects?")
+      try! trap("Compare inside 'PyObject' should accept all objects?")
     case .error(let e):
       return .error(e)
     }

@@ -8,7 +8,7 @@ extension PeepholeOptimizer {
   // Replace jumps to unconditional jumps
   internal func optimizeJumps(result: inout OptimizationResult,
                               instruction: PeepholeInstruction,
-                              arg: UInt8) {
+                              arg: UInt8) throws {
     let labelIndex = instruction.getArgument(instructionArg: arg)
     let label = result.labels[labelIndex]
     let targetIndex = label.instructionIndex
@@ -23,7 +23,7 @@ extension PeepholeOptimizer {
       return
     }
 
-    self.replaceJumpToAbsoluteJumpByJustJump(result: &result,
+    try self.replaceJumpToAbsoluteJumpByJustJump(result: &result,
                                              instruction: instruction,
                                              target: target)
   }
@@ -54,7 +54,7 @@ extension PeepholeOptimizer {
   // swiftlint:disable:next function_body_length
   private func replaceJumpToAbsoluteJumpByJustJump(result: inout OptimizationResult,
                                                    instruction: PeepholeInstruction,
-                                                   target: PeepholeInstruction) {
+                                                   target: PeepholeInstruction) throws {
     let labelIndex: Int
     switch target.value {
     case let .jumpAbsolute(labelIndex: arg):
@@ -63,7 +63,7 @@ extension PeepholeOptimizer {
       return
     }
 
-    let labelIndexSplit = CodeObjectBuilder.splitExtendedArg(labelIndex)
+    let labelIndexSplit = try CodeObjectBuilder.splitExtendedArg(labelIndex)
 
     let oldInstructionCount = instruction.instructionCount
     let newInstructionCount = labelIndexSplit.count
@@ -90,7 +90,7 @@ extension PeepholeOptimizer {
     // case .setupAsyncWith:
     default:
       let i = instruction.value
-      trap("Unknown instruction '\(i)' passed to 'PeepholeOptimizer.optimizeJumps'")
+      try trap("Unknown instruction '\(i)' passed to 'PeepholeOptimizer.optimizeJumps'")
     }
 
     let startIndex = instruction.startIndex

@@ -124,8 +124,8 @@ public struct Py: CustomStringConvertible {
   public let ptr: RawPtr
 
   // swiftlint:disable:next function_body_length
-  public init(config: PyConfig, delegate: PyDelegateType, fileSystem: PyFileSystemType) {
-    checkInvariants()
+  public init(config: PyConfig, delegate: PyDelegateType, fileSystem: PyFileSystemType) throws {
+    try checkInvariants()
 
     self.ptr = PyMemory.allocatePy()
 

@@ -25,7 +25,7 @@ extension Parser {
     try self.consumeOrThrow(.else)
     let right = try self.test(context: context)
 
-    return self.builder.ifExpr(test: test,
+    return try self.builder.ifExpr(test: test,
                                body: left,
                                orElse: right,
                                context: context,
@@ -62,7 +62,7 @@ extension Parser {
     try self.consumeOrThrow(.colon)
 
     let body = try self.test(context: context)
-    return self.builder.lambdaExpr(args: args,
+    return try self.builder.lambdaExpr(args: args,
                                    body: body,
                                    context: context,
                                    start: start,
@@ -85,7 +85,7 @@ extension Parser {
     try self.consumeOrThrow(.colon)
 
     let body = try self.testNoCond(context: context)
-    return self.builder.lambdaExpr(args: args,
+    return try self.builder.lambdaExpr(args: args,
                                    body: body,
                                    context: context,
                                    start: start,
@@ -102,7 +102,7 @@ extension Parser {
       try self.advance() // or
 
       let right = try self.andTest(context: context)
-      left = self.builder.boolOpExpr(op: .or,
+      left = try self.builder.boolOpExpr(op: .or,
                                      left: left,
                                      right: right,
                                      context: context,
@@ -123,7 +123,7 @@ extension Parser {
       try self.advance() // and
 
       let right = try self.notTest(context: context)
-      left = self.builder.boolOpExpr(op: .and,
+      left = try self.builder.boolOpExpr(op: .and,
                                      left: left,
                                      right: right,
                                      context: context,
@@ -143,7 +143,7 @@ extension Parser {
       try self.advance() // not
 
       let right = try self.notTest(context: context)
-      return self.builder.unaryOpExpr(op: .not,
+      return try self.builder.unaryOpExpr(op: .not,
                                       right: right,
                                       context: context,
                                       start: token.start,
@@ -198,7 +198,7 @@ extension Parser {
       let rest = elements.dropFirst()
       let comps = NonEmptyArray<CompareExpr.Element>(first: first, rest: rest)
 
-      return self.builder.compareExpr(left: left,
+      return try self.builder.compareExpr(left: left,
                                       elements: comps,
                                       context: context,
                                       start: left.start,
@@ -220,7 +220,7 @@ extension Parser {
     case .star:
       try self.advance() // *
       let expr = try self.expr(context: context)
-      return self.builder.starredExpr(expression: expr,
+      return try self.builder.starredExpr(expression: expr,
                                       context: context,
                                       start: token.start,
                                       end: expr.end)
@@ -239,7 +239,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.xorExpr(context: context)
-      left = self.builder.binaryOpExpr(op: .bitOr,
+      left = try self.builder.binaryOpExpr(op: .bitOr,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -260,7 +260,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.andExpr(context: context)
-      left = self.builder.binaryOpExpr(op: .bitXor,
+      left = try self.builder.binaryOpExpr(op: .bitXor,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -281,7 +281,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.shiftExpr(context: context)
-      left = self.builder.binaryOpExpr(op: .bitAnd,
+      left = try self.builder.binaryOpExpr(op: .bitAnd,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -307,7 +307,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.term(context: context)
-      left = self.builder.binaryOpExpr(op: op,
+      left = try self.builder.binaryOpExpr(op: op,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -333,7 +333,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.term(context: context)
-      left = self.builder.binaryOpExpr(op: op,
+      left = try self.builder.binaryOpExpr(op: op,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -362,7 +362,7 @@ extension Parser {
       try self.advance() // op
 
       let right = try self.factor(context: context)
-      left = self.builder.binaryOpExpr(op: op,
+      left = try self.builder.binaryOpExpr(op: op,
                                        left: left,
                                        right: right,
                                        context: context,
@@ -383,7 +383,7 @@ extension Parser {
     case .plus:
       try self.advance() // +
       let factor = try self.factor(context: context)
-      return self.builder.unaryOpExpr(op: .plus,
+      return try self.builder.unaryOpExpr(op: .plus,
                                       right: factor,
                                       context: context,
                                       start: token.start,
@@ -392,7 +392,7 @@ extension Parser {
     case .minus:
       try self.advance() // -
       let factor = try self.factor(context: context)
-      return self.builder.unaryOpExpr(op: .minus,
+      return try self.builder.unaryOpExpr(op: .minus,
                                       right: factor,
                                       context: context,
                                       start: token.start,
@@ -401,7 +401,7 @@ extension Parser {
     case .tilde:
       try self.advance() // ~
       let factor = try self.factor(context: context)
-      return self.builder.unaryOpExpr(op: .invert,
+      return try self.builder.unaryOpExpr(op: .invert,
                                       right: factor,
                                       context: context,
                                       start: token.start,
@@ -420,7 +420,7 @@ extension Parser {
 
     if try self.consumeIf(.starStar) {
       let factor = try self.factor(context: context)
-      return self.builder.binaryOpExpr(op: .pow,
+      return try self.builder.binaryOpExpr(op: .pow,
                                        left: atomExpr,
                                        right: factor,
                                        context: context,

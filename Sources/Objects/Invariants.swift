@@ -10,15 +10,15 @@ import VioletBytecode
 /// Technically `stride` would be better, but the same `stride` may describe
 /// multiple `sizes` and in this test we are more interested in the fact
 /// that the value has changed and not in the value itself.
-private func assertSize<T>(type: T.Type, expected: Int) {
+private func assertSize<T>(type: T.Type, expected: Int) throws {
   let size = MemoryLayout<T>.size
   let typeName = String(describing: type)
-  assertSize(typeName: typeName, size: size, expected: expected)
+  try assertSize(typeName: typeName, size: size, expected: expected)
 }
 
-private func assertSize(typeName: String, size: Int, expected: Int) {
+private func assertSize(typeName: String, size: Int, expected: Int) throws {
   if size != expected {
-    trap("[Invariant] \(typeName) has size \(size) instead of expected \(expected)")
+    try trap("[Invariant] \(typeName) has size \(size) instead of expected \(expected)")
   }
 }
 
@@ -48,15 +48,15 @@ private func dumpMemory<T>(of value: T) {
 // MARK: - Check invariants
 
 /// Static checks, at runtime because YOLO.
-internal func checkInvariants() {
+internal func checkInvariants() throws {
   // 1 ptr (it should use tagged pointer internally)
-  assertSize(type: BigInt.self, expected: 8)
+  try assertSize(type: BigInt.self, expected: 8)
 
   // 1 opcode + 1 argument = 2
-  assertSize(type: Instruction.self, expected: 2)
+  try assertSize(type: Instruction.self, expected: 2)
 
   // 4 line + 4 column = 8
-  assertSize(type: SourceLocation.self, expected: 8)
+  try assertSize(type: SourceLocation.self, expected: 8)
 
   //            | size alignment | offset | object_size object_alignment
   // type       |    8         8 |      0 |           8                8
@@ -65,5 +65,5 @@ internal func checkInvariants() {
   // flags      |    4         4 |     36 |          40                8
   //                                                 ^^ THIS
   let objectSize = PyObject.layout.size
-  assertSize(typeName: "PyObject", size: objectSize, expected: 40)
+  try assertSize(typeName: "PyObject", size: objectSize, expected: 40)
 }

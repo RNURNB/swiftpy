@@ -267,7 +267,7 @@ extension UnderscoreWarnings {
     case .error,
          .ignore,
          .always:
-      trap("'\(filter.action)' should never be stored!")
+      try! trap("'\(filter.action)' should never be stored!")
     }
   }
 

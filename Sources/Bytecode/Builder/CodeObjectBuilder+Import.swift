@@ -3,8 +3,8 @@ import VioletCore
 extension CodeObjectBuilder {
 
   /// Append an `importName` instruction to this code object.
-  public func appendImportName(name: String) {
-    let arg = self.appendExtendedArgsForNameIndex(name: name)
+  public func appendImportName(name: String) throws {
+    let arg = try self.appendExtendedArgsForNameIndex(name: name)
     self.append(.importName(nameIndex: arg))
   }
 
@@ -14,8 +14,8 @@ extension CodeObjectBuilder {
   }
 
   /// Append an `importFrom` instruction to this code object.
-  public func appendImportFrom(name: String) {
-    let arg = self.appendExtendedArgsForNameIndex(name: name)
+  public func appendImportFrom(name: String) throws {
+    let arg = try self.appendExtendedArgsForNameIndex(name: name)
     self.append(.importFrom(nameIndex: arg))
   }
 }

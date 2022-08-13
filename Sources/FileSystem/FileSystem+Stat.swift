@@ -116,15 +116,15 @@ extension FileSystem {
     return StatResult(result: result, data: data)
   }
 
-  public func statOrTrap(path: Path) -> Stat {
+  public func statOrTrap(path: Path) throws -> Stat {
     switch self.stat(path: path) {
     case .value(let s):
       return s
     case .enoent:
-      trap("Unable to stat: No such file or directory: \(path)")
+      try trap("Unable to stat: No such file or directory: \(path)")
     case .error(let err):
       let msg = String(errno: err) ?? "Unknown error"
-      trap("Unable to stat: \(msg): \(path)")
+      try trap("Unable to stat: \(msg): \(path)")
     }
   }
 

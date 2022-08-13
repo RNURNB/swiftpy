@@ -52,7 +52,7 @@ extension UnderscoreWarnings {
 
     if self.isWarningSubtype(type: messageArg.type) {
       // 'message' is 'Warning' subclass, as a 'text' we will just use 'str(message)'
-      switch self.py.types.str.call(self.py, args: [messageArg.asObject], kwargs: nil) {
+      switch try! self.py.types.str.call(self.py, args: [messageArg.asObject], kwargs: nil) {
       case let .value(t): text = t
       case let .error(e): return .error(e)
       }

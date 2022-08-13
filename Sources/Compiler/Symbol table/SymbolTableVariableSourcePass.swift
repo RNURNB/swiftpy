@@ -258,7 +258,7 @@ internal final class SymbolTableVariableSourcePass {
     // Update source information for all symbols in this scope
     for (name, info) in scope.symbols {
       guard let srcFlags = scopeContext.symbolSources[name] else {
-        trap("[BUG] Source for variable '\(name.beforeMangling)' was not found, " +
+        try trap("[BUG] Source for variable '\(name.beforeMangling)' was not found, " +
           "and thus cannot be set."
         )
       }

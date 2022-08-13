@@ -37,15 +37,15 @@ extension CompilerImpl {
     fileprivate let builder: CodeObjectBuilder
 
     func emitPackElements(count: Int) throws {
-      self.builder.appendBuildTuple(elementCount: count)
+      try self.builder.appendBuildTuple(elementCount: count)
     }
 
     func emitBuildCollection(count: Int) throws {
-      self.builder.appendBuildTuple(elementCount: count)
+      try self.builder.appendBuildTuple(elementCount: count)
     }
 
     func emitBuildUnpackCollection(count: Int) throws {
-      self.builder.appendBuildTupleUnpack(elementCount: count)
+      try self.builder.appendBuildTupleUnpack(elementCount: count)
     }
   }
 
@@ -71,15 +71,15 @@ extension CompilerImpl {
     fileprivate let builder: CodeObjectBuilder
 
     func emitPackElements(count: Int) throws {
-      self.builder.appendBuildTuple(elementCount: count)
+      try self.builder.appendBuildTuple(elementCount: count)
     }
 
     func emitBuildCollection(count: Int) throws {
-      self.builder.appendBuildList(elementCount: count)
+      try self.builder.appendBuildList(elementCount: count)
     }
 
     func emitBuildUnpackCollection(count: Int) throws {
-      self.builder.appendBuildListUnpack(elementCount: count)
+      try self.builder.appendBuildListUnpack(elementCount: count)
     }
   }
 
@@ -116,7 +116,7 @@ extension CompilerImpl {
       case let .unpacking(expr):
         // change elements to container, so we can unpack it later
         if nSimpleElement > 0 {
-          self.builder.appendBuildMap(elementCount: nSimpleElement)
+          try self.builder.appendBuildMap(elementCount: nSimpleElement)
           nSimpleElement = 0
           nPackedElement += 1
         }
@@ -134,13 +134,13 @@ extension CompilerImpl {
 
     if nPackedElement > 0 {
       if nSimpleElement > 0 {
-        self.builder.appendBuildMap(elementCount: nSimpleElement)
+        try self.builder.appendBuildMap(elementCount: nSimpleElement)
         nPackedElement += 1
       }
 
-      self.builder.appendBuildMapUnpack(elementCount: nPackedElement)
+      try self.builder.appendBuildMapUnpack(elementCount: nPackedElement)
     } else {
-      self.builder.appendBuildMap(elementCount: nSimpleElement)
+      try self.builder.appendBuildMap(elementCount: nSimpleElement)
     }
   }
 
@@ -151,15 +151,15 @@ extension CompilerImpl {
     fileprivate let builder: CodeObjectBuilder
 
     func emitPackElements(count: Int) throws {
-      self.builder.appendBuildSet(elementCount: count)
+      try self.builder.appendBuildSet(elementCount: count)
     }
 
     func emitBuildCollection(count: Int) throws {
-      self.builder.appendBuildSet(elementCount: count)
+      try self.builder.appendBuildSet(elementCount: count)
     }
 
     func emitBuildUnpackCollection(count: Int) throws {
-      self.builder.appendBuildSetUnpack(elementCount: count)
+      try self.builder.appendBuildSetUnpack(elementCount: count)
     }
   }
 
@@ -217,11 +217,11 @@ extension CompilerImpl {
 
       hasSeenStar = true
       elementsWithoutUnpack[index] = star.expression
-      self.builder.appendUnpackEx(countBefore: countBefore, countAfter: countAfter)
+      try self.builder.appendUnpackEx(countBefore: countBefore, countAfter: countAfter)
     }
 
     if !hasSeenStar {
-      self.builder.appendUnpackSequence(elementCount: elements.count)
+      try self.builder.appendUnpackSequence(elementCount: elements.count)
     }
 
     try self.visit(elementsWithoutUnpack)

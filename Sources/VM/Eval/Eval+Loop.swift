@@ -13,7 +13,7 @@ extension Eval {
       stackCount: self.stack.count
     )
 
-    self.blockStack.push(block)
+    try! self.blockStack.push(block)
     return .ok
   }
 

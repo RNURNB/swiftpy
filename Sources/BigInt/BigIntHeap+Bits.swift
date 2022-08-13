@@ -55,8 +55,8 @@ extension BigIntHeap {
 
   /// void
   /// mpz_com (mpz_t r, const mpz_t u)
-  internal mutating func invert() {
-    self.add(other: 1)
+  internal mutating func invert() throws {
+    try self.add(other: 1)
     self.negate()
     self.checkInvariants()
   }

@@ -33,7 +33,7 @@ extension Parser {
       let end = self.peek.end
       try self.consumeOrThrow(.rightParen)
 
-      return self.builder.callExpr(function: leftExpr,
+      return try self.builder.callExpr(function: leftExpr,
                                    args: ir.args,
                                    keywords: ir.keywords,
                                    context: .load,
@@ -53,8 +53,8 @@ extension Parser {
       // Container should be loaded and 'del' context should be set on 'subscriptExpr'.
       SetLoadExpressionContext.run(expression: leftExpr)
 
-      let slice = self.builder.slice(kind: sliceKind, start: start, end: end)
-      return self.builder.subscriptExpr(object: leftExpr,
+      let slice = try self.builder.slice(kind: sliceKind, start: start, end: end)
+      return try self.builder.subscriptExpr(object: leftExpr,
                                         slice: slice,
                                         context: context,
                                         start: leftExpr.start,
@@ -70,7 +70,7 @@ extension Parser {
       // Object should be loaded and 'del' context should be set on 'attributeExpr'.
       SetLoadExpressionContext.run(expression: leftExpr)
 
-      return self.builder.attributeExpr(object: leftExpr,
+      return try self.builder.attributeExpr(object: leftExpr,
                                         name: name,
                                         context: context,
                                         start: leftExpr.start,
@@ -108,7 +108,7 @@ extension Parser {
     /// The grammar is ambiguous here. The ambiguity is resolved
     /// by treating the sequence as a tuple literal if there are
     /// no slice features. (comment taken from CPython)
-    if let tupleSlice = self.asTupleIndexIfAllElementsAreIndices(elements) {
+    if let tupleSlice = try self.asTupleIndexIfAllElementsAreIndices(elements) {
       return tupleSlice
     }
 
@@ -116,7 +116,7 @@ extension Parser {
   }
 
   private func asTupleIndexIfAllElementsAreIndices(
-    _ slices: NonEmptyArray<Slice>) -> Slice.Kind? {
+    _ slices: NonEmptyArray<Slice>) throws -> Slice.Kind? {
 
     var indices = [Expression]()
 
@@ -128,7 +128,7 @@ extension Parser {
       }
     }
 
-    let result = self.builder.tupleExpr(elements: indices,
+    let result = try self.builder.tupleExpr(elements: indices,
                                         context: .load,
                                         start: slices.first.start,
                                         end: slices.last.end)
@@ -151,7 +151,7 @@ extension Parser {
     // subscript: test -> index
     if let index = lower, closingTokens.contains(self.peek.kind) {
       let kind = Slice.Kind.index(index)
-      return self.builder.slice(kind: kind, start: index.start, end: index.end)
+      return try self.builder.slice(kind: kind, start: index.start, end: index.end)
     }
 
     // subscript: [test] ':' [test] [sliceop] -> slice
@@ -176,6 +176,6 @@ extension Parser {
     }
 
     let kind = Slice.Kind.slice(lower: lower, upper: upper, step: step)
-    return self.builder.slice(kind: kind, start: start, end: end)
+    return try self.builder.slice(kind: kind, start: start, end: end)
   }
 }

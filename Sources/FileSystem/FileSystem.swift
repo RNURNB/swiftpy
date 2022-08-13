@@ -68,17 +68,17 @@ public struct FileSystem {
   }
 
   public func getRepositoryRootOrTrap(startingFrom: String = #file,
-                                      marker: String = "Sources") -> Path {
+                                      marker: String = "Sources") throws -> Path {
     switch self.getRepositoryRoot(marker: marker) {
     case .value(let p):
       return p
     case .notFound:
-      trap("Unable to find repository root using '\(marker)' as a marker")
+      try trap("Unable to find repository root using '\(marker)' as a marker")
     case let .error(p, errno: e):
       if let msg = String(errno: e) {
-        trap("\(msg): \(p)")
+        try trap("\(msg): \(p)")
       } else {
-        trap("Unable to find repository root, (errno: \(e), for \(p).")
+        try trap("Unable to find repository root, (errno: \(e), for \(p).")
       }
     }
   }
@@ -90,10 +90,10 @@ public struct FileSystem {
     return Path(string: cwd)
   }
 
-  public func setCurrentWorkingDirectoryOrTrap(path: Path) {
+  public func setCurrentWorkingDirectoryOrTrap(path: Path) throws {
     let result = self.fileManager.changeCurrentDirectoryPath(path.string)
     if !result {
-      trap("Unable to set cwd to: '\(path)'")
+      try trap("Unable to set cwd to: '\(path)'")
     }
   }
 

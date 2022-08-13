@@ -28,12 +28,12 @@ internal final class SymbolTableBuilderImpl: ASTVisitor,
   /// Scope that we are currently filling (top of the `self.scopeStack`).
   internal var currentScope: SymbolScope {
     if let last = self.scopeStack.last { return last }
-    trap("[BUG] SymbolTableBuilder: Using nil current scope.")
+    try! trap("[BUG] SymbolTableBuilder: Using nil current scope.")
   }
 
   internal var topScope: SymbolScope {
     if let first = self.scopeStack.first { return first }
-    trap("[BUG] SymbolTableBuilder: Using nil top scope.")
+    try! trap("[BUG] SymbolTableBuilder: Using nil top scope.")
   }
 
   /// Name of the class that we are currently filling (if any).

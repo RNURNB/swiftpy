@@ -79,7 +79,7 @@ extension CompilerImpl {
     let finallyStart = self.builder.createLabel()
 
     // body
-    self.builder.appendSetupFinally(finallyStart: finallyStart)
+    try self.builder.appendSetupFinally(finallyStart: finallyStart)
     try self.inBlock(.finallyTry) {
       if handlers.any {
         try self.visitTryExcept(body: body, handlers: handlers, orElse: orElse)
@@ -90,7 +90,7 @@ extension CompilerImpl {
       self.builder.appendPopBlock()
     }
 
-    self.builder.appendNone()
+    try self.builder.appendNone()
 
     // finally
     self.builder.setLabel(finallyStart)
@@ -145,13 +145,13 @@ extension CompilerImpl {
     let end = self.builder.createLabel()
 
     // body
-    self.builder.appendSetupExcept(firstExcept: firstExcept)
+    try self.builder.appendSetupExcept(firstExcept: firstExcept)
     try self.inBlock(.except) {
       try self.visit(body)
       self.builder.appendPopBlock()
     }
     // if no exception happened then go to 'orElse'
-    self.builder.appendJumpAbsolute(to: orElseStart)
+    try self.builder.appendJumpAbsolute(to: orElseStart)
 
     // except
     self.builder.setLabel(firstExcept)
@@ -171,13 +171,13 @@ extension CompilerImpl {
         self.builder.appendDupTop() // dup exception (exception match will consume it)
         try self.visit(type)
         self.builder.appendCompareOp(type: .exceptionMatch)
-        self.builder.appendPopJumpIfFalse(to: nextExcept)
+        try self.builder.appendPopJumpIfFalse(to: nextExcept)
       }
 
       if case let .typed(type: _, asName: asName) = handler.kind,
               let name = asName {
         // we have name -> store exception
-        self.visitName(name: name, context: .store)
+        try self.visitName(name: name, context: .store)
 
         // try:
         //     # body
@@ -190,22 +190,22 @@ extension CompilerImpl {
 
         // second try:
         let cleanupEnd = self.builder.createLabel()
-        self.builder.appendSetupFinally(finallyStart: cleanupEnd)
+        try self.builder.appendSetupFinally(finallyStart: cleanupEnd)
         try self.inBlock(.finallyTry) {
           try self.visit(handler.body)
           self.builder.appendPopBlock()
         }
 
         // finally:
-        self.builder.appendNone()
+        try self.builder.appendNone()
         self.builder.setLabel(cleanupEnd)
 
-        self.inBlock(.finallyEnd) {
+        try self.inBlock(.finallyEnd) {
           // name = None
-          self.builder.appendNone()
-          self.visitName(name: name, context: .store)
+          try self.builder.appendNone()
+          try self.visitName(name: name, context: .store)
           // del name
-          self.visitName(name: name, context: .del)
+          try self.visitName(name: name, context: .del)
           // cleanup
           self.builder.appendEndFinally()
           self.builder.appendPopExcept()
@@ -219,7 +219,7 @@ extension CompilerImpl {
         }
       }
 
-      self.builder.appendJumpAbsolute(to: end)
+      try self.builder.appendJumpAbsolute(to: end)
       self.builder.setLabel(nextExcept)
     }
 

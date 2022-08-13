@@ -82,7 +82,7 @@ extension Abstract {
         return .value(result)
       case .overflow:
         // It's impossible that <= 48 bits overflowed
-        unreachable()
+        try! unreachable()
       }
     }
 
@@ -133,8 +133,8 @@ extension Abstract {
 
     if fracPart != 0.0 {
       // Remove the last bit, and replace it with 1 for left
-      rightWW = rightWW << 1
-      leftVV = leftVV << 1
+      try! rightWW = rightWW << 1
+      try! leftVV = leftVV << 1
       leftVV = leftVV | 1
     }
 

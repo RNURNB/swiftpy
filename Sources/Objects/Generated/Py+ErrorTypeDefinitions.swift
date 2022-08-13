@@ -1067,7 +1067,7 @@ extension Py {
     /// - add `__doc__`
     /// - fill `__dict__`
     internal func fill__dict__(_ py: Py) {
-      self.fillBaseException(py)
+      try! self.fillBaseException(py)
       self.fillSystemExit(py)
       self.fillKeyboardInterrupt(py)
       self.fillGeneratorExit(py)
@@ -1182,13 +1182,13 @@ extension Py {
         break
       case .error(let e):
         let typeName = type.getNameString()
-        trap("Error when adding '\(name)' to '\(typeName)' type: \(e)")
+        try! trap("Error when adding '\(name)' to '\(typeName)' type: \(e)")
       }
     }
 
     // MARK: - BaseException
 
-    private func fillBaseException(_ py: Py) {
+    private func fillBaseException(_ py: Py) throws {
       let type = self.baseException
       type.setBuiltinTypeDoc(py, value: PyBaseException.doc)
 

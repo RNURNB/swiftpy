@@ -28,7 +28,7 @@ extension Parser {
     if self.peek.kind == .rightParen { // a = () -> empty tuple
       let end = self.peek.end
       try self.advance() // )
-      return self.builder.tupleExpr(elements: [],
+      return try self.builder.tupleExpr(elements: [],
                                     context: context,
                                     start: start,
                                     end: end)
@@ -52,12 +52,12 @@ extension Parser {
       e.end = end
       return e
     case let .multiple(es):
-      return self.builder.tupleExpr(elements: es,
+      return try self.builder.tupleExpr(elements: es,
                                     context: context,
                                     start: start,
                                     end: end)
     case let .listComprehension(elt: elt, generators: gen):
-      return self.builder.generatorExpr(element: elt,
+      return try self.builder.generatorExpr(element: elt,
                                         generators: gen,
                                         context: .load,
                                         start: start,

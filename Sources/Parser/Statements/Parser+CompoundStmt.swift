@@ -83,7 +83,7 @@ extension Parser {
       orElse = try self.suite()
     }
 
-    return self.compile(irs: irs, orElse: orElse)
+    return try self.compile(irs: irs, orElse: orElse)
   }
 
   /// ```c
@@ -104,14 +104,14 @@ extension Parser {
   /// ```
   /// Full song [here](https://www.youtube.com/watch?v=tTUZswZHsWQ ).
   private func compile(irs: NonEmptyArray<IfIR>,
-                       orElse: NonEmptyArray<Statement>?) -> Statement {
+                       orElse: NonEmptyArray<Statement>?) throws -> Statement {
 
     var result: Statement?
     var pendingElse = orElse.map(Array.init) ?? []
 
     for ir in irs.reversed() {
       let end = pendingElse.last?.end ?? ir.body.last.end
-      let statement = self.builder.ifStmt(test: ir.test,
+      let statement = try self.builder.ifStmt(test: ir.test,
                                           body: ir.body,
                                           orElse: pendingElse,
                                           start: ir.start,
@@ -150,7 +150,7 @@ extension Parser {
     }
 
     let end = orElse?.last.end ?? body.last.end
-    return self.builder.whileStmt(test: test,
+    return try self.builder.whileStmt(test: test,
                                   body: body,
                                   orElse: orElse.map(Array.init) ?? [],
                                   start: start,
@@ -171,12 +171,12 @@ extension Parser {
 
     let targetStart = self.peek.start
     let targetRaw = try self.exprList(context: .store, closingTokens: [.in])
-    let target = targetRaw.toExpression(using: &self.builder, start: targetStart)
+    let target = try targetRaw.toExpression(using: &self.builder, start: targetStart)
     try self.consumeOrThrow(.in)
 
     let iterStart = self.peek.start
     let iterRaw = try self.testList(context: .load, closingTokens: [.colon])
-    let iter = iterRaw.toExpression(using: &self.builder, start: iterStart)
+    let iter = try iterRaw.toExpression(using: &self.builder, start: iterStart)
     try self.consumeOrThrow(.colon)
 
     let body = try self.suite()
@@ -193,9 +193,9 @@ extension Parser {
 
     // swiftlint:disable multiline_arguments
     return isAsync ?
-      self.builder.asyncForStmt(target: target, iterable: iter, body: body,
+      try self.builder.asyncForStmt(target: target, iterable: iter, body: body,
                                 orElse: orElse, start: forStart, end: end) :
-      self.builder.forStmt(target: target, iterable: iter, body: body,
+      try self.builder.forStmt(target: target, iterable: iter, body: body,
                            orElse: orElse, start: forStart, end: end)
     // swiftlint:enable multiline_arguments
   }
@@ -226,8 +226,8 @@ extension Parser {
     let end = body.last.end
 
     return isAsync ?
-      self.builder.asyncWithStmt(items: items, body: body, start: start, end: end) :
-      self.builder.withStmt(items: items, body: body, start: start, end: end)
+      try self.builder.asyncWithStmt(items: items, body: body, start: start, end: end) :
+      try self.builder.withStmt(items: items, body: body, start: start, end: end)
   }
 
   /// `with_item: test ['as' expr]`
@@ -240,7 +240,7 @@ extension Parser {
       optionalVars = try self.expr(context: .store)
     }
 
-    return self.builder.withItem(contextExpr: context,
+    return try self.builder.withItem(contextExpr: context,
                                  optionalVars: optionalVars,
                                  start: token.start,
                                  end: optionalVars?.end ?? token.end)

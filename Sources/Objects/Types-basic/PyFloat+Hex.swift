@@ -250,7 +250,7 @@ extension PyFloat {
       assert(count >= 0)
 
       guard let index = self.index(offset: count) else {
-        trap("'FromHexString.advance' called to advance after end")
+        try! trap("'FromHexString.advance' called to advance after end")
       }
 
       self.window = self.window[index...]

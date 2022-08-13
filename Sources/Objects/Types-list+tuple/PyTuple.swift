@@ -301,7 +301,7 @@ public struct PyTuple: PyObjectMixin, AbstractSequence {
       case let .error(e): return .error(e)
       }
     default:
-      trap("We already checked max count = 1")
+      try! trap("We already checked max count = 1")
     }
 
     // If this is a builtin then try to re-use interned values

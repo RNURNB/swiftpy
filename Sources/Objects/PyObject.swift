@@ -456,7 +456,7 @@ public struct PyObject: PyObjectMixin {
   private static func hasOverridden(_ py: Py, type: PyType, name: IdString) -> Bool {
     guard let lookup = type.mroLookup(py, name: name) else {
       let t = type.getNameString()
-      trap("Uh… oh… So '\(name)' lookup on \(t) failed to find anything. " +
+      try! trap("Uh… oh… So '\(name)' lookup on \(t) failed to find anything. " +
            "It should not be possible since every type derives from 'object', " +
            "(which has this method) but here we are…"
       )

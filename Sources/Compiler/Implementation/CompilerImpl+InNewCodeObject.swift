@@ -18,7 +18,7 @@ extension CompilerImpl {
   internal func inNewCodeObject<N: ASTNode>(
     node: N,
     emitInstructions block: () throws -> Void
-  ) rethrows -> CodeObject {
+  ) throws/*rethrows*/ -> CodeObject {
     return try self.inNewCodeObject(node: node,
                                     argCount: 0,
                                     posOnlyArgCount: 0,
@@ -37,15 +37,14 @@ extension CompilerImpl {
     posOnlyArgCount: Int,
     kwOnlyArgCount: Int,
     emitInstructions block: () throws -> Void
-  ) rethrows -> CodeObject {
-    self.enterScope(node: node,
+  ) throws/*rethrows*/ -> CodeObject {
+    try self.enterScope(node: node,
                     argCount: argCount,
                     posOnlyArgCount: posOnlyArgCount,
                     kwOnlyArgCount: kwOnlyArgCount)
-
     try block()
-    let code = self.builder.finalize()
-    self.leaveScope()
+    let code = try self.builder.finalize()
+    try self.leaveScope()
 
     return code
   }
@@ -58,10 +57,10 @@ extension CompilerImpl {
   private func enterScope<N: ASTNode>(node: N,
                                       argCount: Int,
                                       posOnlyArgCount: Int,
-                                      kwOnlyArgCount: Int) {
+                                      kwOnlyArgCount: Int) throws {
 
     guard let scope = self.symbolTable.scopeByNode[node] else {
-      trap("[BUG] Compiler: Entering scope that is not present in symbol table.")
+      try trap("[BUG] Compiler: Entering scope that is not present in symbol table.")
     }
 
     let name = self.createName(scope: scope)
@@ -93,10 +92,10 @@ extension CompilerImpl {
   /// Pop a scope (along with corresponding code object builder).
   ///
   /// compiler_exit_scope(struct compiler *c)
-  private func leaveScope() {
+  private func leaveScope() throws {
     let unit = self.unitStack.popLast()
     if unit == nil {
-      trap("[BUG] Compiler: Attempting to pop non-existing unit.")
+      try trap("[BUG] Compiler: Attempting to pop non-existing unit.")
     }
   }
 

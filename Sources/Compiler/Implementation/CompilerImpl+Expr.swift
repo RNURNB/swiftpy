@@ -26,21 +26,21 @@ extension CompilerImpl {
   // MARK: - General
 
   internal func visit(_ node: NoneExpr) throws {
-    self.builder.appendNone()
+    try self.builder.appendNone()
   }
 
   internal func visit(_ node: EllipsisExpr) throws {
-    self.builder.appendEllipsis()
+    try self.builder.appendEllipsis()
   }
 
   // MARK: - Bool
 
   internal func visit(_ node: TrueExpr) throws {
-    self.builder.appendTrue()
+    try self.builder.appendTrue()
   }
 
   internal func visit(_ node: FalseExpr) throws {
-    self.builder.appendFalse()
+    try self.builder.appendFalse()
   }
 
   // MARK: - Identifier
@@ -54,11 +54,11 @@ extension CompilerImpl {
   }
 
   internal func visit(_ node: IdentifierExpr) throws {
-    self.visitName(name: node.value, context: node.context)
+    try self.visitName(name: node.value, context: node.context)
   }
 
   /// compiler_nameop(struct compiler *c, identifier name, expr_context_ty ctx)
-  internal func visitName(name: String, context: ExpressionContext) {
+  internal func visitName(name: String, context: ExpressionContext) throws {
     let mangled = self.mangle(name: name)
     let scope = self.currentScope
     let info = scope.symbols[mangled]
@@ -89,29 +89,29 @@ extension CompilerImpl {
     case .free:
       let isLoadInClass = context == .load && scope.kind.isClass
       if isLoadInClass {
-        self.builder.appendLoadClassFree(mangled)
+        try self.builder.appendLoadClassFree(mangled)
       } else {
-        self.builder.appendFree(name: mangled, context: context)
+        try self.builder.appendFree(name: mangled, context: context)
       }
-    case .cell: self.builder.appendCell(name: mangled, context: context)
-    case .fast: self.builder.appendFast(name: mangled, context: context)
-    case .global: self.builder.appendGlobal(name: mangled, context: context)
-    case .name: self.builder.appendName(name: mangled, context: context)
+    case .cell: try self.builder.appendCell(name: mangled, context: context)
+    case .fast: try self.builder.appendFast(name: mangled, context: context)
+    case .global: try self.builder.appendGlobal(name: mangled, context: context)
+    case .name: try self.builder.appendName(name: mangled, context: context)
     }
   }
 
   // MARK: - Numbers
 
   internal func visit(_ node: IntExpr) throws {
-    self.builder.appendInteger(node.value)
+    try self.builder.appendInteger(node.value)
   }
 
   internal func visit(_ node: FloatExpr) throws {
-    self.builder.appendFloat(node.value)
+    try self.builder.appendFloat(node.value)
   }
 
   internal func visit(_ node: ComplexExpr) throws {
-    self.builder.appendComplex(real: node.real, imag: node.imag)
+    try self.builder.appendComplex(real: node.real, imag: node.imag)
   }
 
   // MARK: - String
@@ -125,7 +125,7 @@ extension CompilerImpl {
   internal func visit(_ group: StringExpr.Group) throws {
     switch group {
     case let .literal(s):
-      self.builder.appendString(s)
+      try self.builder.appendString(s)
 
     case let .formattedValue(expr, conversion: conversionArg, spec: spec):
       try self.visit(expr)
@@ -141,7 +141,7 @@ extension CompilerImpl {
       var hasFormat = false
       if let s = spec {
         hasFormat = true
-        self.builder.appendString(s)
+        try self.builder.appendString(s)
       }
 
       self.builder.appendFormatValue(conversion: conversion, hasFormat: hasFormat)
@@ -152,20 +152,20 @@ extension CompilerImpl {
       }
 
       if groups.count > 1 {
-        self.builder.appendBuildString(count: groups.count)
+        try self.builder.appendBuildString(count: groups.count)
       }
     }
   }
 
   internal func visit(_ node: BytesExpr) throws {
-    self.builder.appendBytes(node.value)
+    try self.builder.appendBytes(node.value)
   }
 
   // MARK: - Operators
 
   internal func visit(_ node: UnaryOpExpr) throws {
     try self.visit(node.right)
-    self.builder.appendUnaryOperator(node.op)
+    try self.builder.appendUnaryOperator(node.op)
   }
 
   internal func visit(_ node: BinaryOpExpr) throws {
@@ -189,8 +189,8 @@ extension CompilerImpl {
     try self.visit(node.left)
 
     switch node.op {
-    case .and: self.builder.appendJumpIfFalseOrPop(to: end)
-    case .or: self.builder.appendJumpIfTrueOrPop(to: end)
+    case .and: try self.builder.appendJumpIfFalseOrPop(to: end)
+    case .or: try self.builder.appendJumpIfTrueOrPop(to: end)
     }
 
     try self.visit(node.right)
@@ -232,14 +232,14 @@ extension CompilerImpl {
         self.builder.appendDupTop()
         self.builder.appendRotThree()
         self.builder.appendCompareOp(operator: element.op)
-        self.builder.appendJumpIfFalseOrPop(to: cleanup)
+        try self.builder.appendJumpIfFalseOrPop(to: cleanup)
       }
 
       let last = node.elements.last
       try self.visit(last.right)
       self.builder.appendCompareOp(operator: last.op)
 
-      self.builder.appendJumpAbsolute(to: end)
+      try self.builder.appendJumpAbsolute(to: end)
       self.builder.setLabel(cleanup)
       self.builder.appendRotTwo()
       self.builder.appendPopTop()
@@ -270,7 +270,7 @@ extension CompilerImpl {
 
     try self.visit(node.value)
     self.builder.appendGetAwaitable()
-    self.builder.appendNone()
+    try self.builder.appendNone()
     self.builder.appendYieldFrom()
   }
 
@@ -285,7 +285,7 @@ extension CompilerImpl {
     if let v = node.value {
       try self.visit(v)
     } else {
-      self.builder.appendNone()
+      try self.builder.appendNone()
     }
 
     self.builder.appendYieldValue()
@@ -303,7 +303,7 @@ extension CompilerImpl {
 
     try self.visit(node.value)
     self.builder.appendGetYieldFromIter()
-    self.builder.appendNone()
+    try self.builder.appendNone()
     self.builder.appendYieldFrom()
   }
 
@@ -326,7 +326,7 @@ extension CompilerImpl {
 
     try self.visit(node.test, andJumpTo: orElseStart, ifBooleanValueIs: false)
     try self.visit(node.body)
-    self.builder.appendJumpAbsolute(to: end)
+    try self.builder.appendJumpAbsolute(to: end)
     self.builder.setLabel(orElseStart)
     try self.visit(node.orElse)
     self.builder.setLabel(end)
@@ -357,15 +357,15 @@ extension CompilerImpl {
       if isAugmented {
         self.builder.appendRotTwo()
       }
-      self.builder.appendStoreAttribute(mangled)
+      try self.builder.appendStoreAttribute(mangled)
     case .load:
       if isAugmented {
         self.builder.appendDupTop()
       }
-      self.builder.appendLoadAttribute(mangled)
+      try self.builder.appendLoadAttribute(mangled)
     case .del:
       assert(!isAugmented)
-      self.builder.appendDeleteAttribute(mangled)
+      try self.builder.appendDeleteAttribute(mangled)
     }
   }
 
@@ -407,7 +407,7 @@ extension CompilerImpl {
         for s in slices {
           try self.visitNestedSlice(slice: s, context: context)
         }
-        self.builder.appendBuildTuple(elementCount: slices.count)
+        try self.builder.appendBuildTuple(elementCount: slices.count)
       }
     }
 
@@ -449,13 +449,13 @@ extension CompilerImpl {
     if let l = lower {
       try self.visit(l)
     } else {
-      self.builder.appendNone()
+      try self.builder.appendNone()
     }
 
     if let u = upper {
       try self.visit(u)
     } else {
-      self.builder.appendNone()
+      try self.builder.appendNone()
     }
 
     var type = Instruction.SliceArg.lowerUpper
@@ -522,7 +522,7 @@ extension CompilerImpl {
       try self.visit(ifExpr.test, andJumpTo: next2, ifBooleanValueIs: false)
       try self.visit(ifExpr.body, andJumpTo: next, ifBooleanValueIs: cond)
 
-      self.builder.appendJumpAbsolute(to: end)
+      try self.builder.appendJumpAbsolute(to: end)
       self.builder.setLabel(next2)
 
       try self.visit(ifExpr.orElse, andJumpTo: next, ifBooleanValueIs: cond)
@@ -538,8 +538,8 @@ extension CompilerImpl {
     // general implementation:
     try self.visit(expression)
     switch cond {
-    case true: self.builder.appendPopJumpIfTrue(to: next)
-    case false: self.builder.appendPopJumpIfFalse(to: next)
+    case true: try self.builder.appendPopJumpIfTrue(to: next)
+    case false: try self.builder.appendPopJumpIfFalse(to: next)
     }
   }
 
@@ -558,7 +558,7 @@ extension CompilerImpl {
       self.builder.appendDupTop()
       self.builder.appendRotThree()
       self.builder.appendCompareOp(operator: element.op)
-      self.builder.appendPopJumpIfFalse(to: cleanup)
+      try self.builder.appendPopJumpIfFalse(to: cleanup)
     }
 
     let last = compare.elements.last
@@ -566,16 +566,16 @@ extension CompilerImpl {
     self.builder.appendCompareOp(operator: last.op)
 
     switch cond {
-    case true: self.builder.appendPopJumpIfTrue(to: next)
-    case false: self.builder.appendPopJumpIfFalse(to: next)
+    case true: try self.builder.appendPopJumpIfTrue(to: next)
+    case false: try self.builder.appendPopJumpIfFalse(to: next)
     }
 
-    self.builder.appendJumpAbsolute(to: end)
+    try self.builder.appendJumpAbsolute(to: end)
     self.builder.setLabel(cleanup)
     self.builder.appendPopTop()
 
     if !cond {
-      self.builder.appendJumpAbsolute(to: next)
+      try self.builder.appendJumpAbsolute(to: next)
     }
     self.builder.setLabel(end)
   }

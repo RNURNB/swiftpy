@@ -58,7 +58,7 @@ public struct PeepholeOptimizer {
   /// PyObject *
   /// PyCode_Optimize(PyObject *code, PyObject* consts, PyObject *names,
   ///                 PyObject *lnotab_obj)
-  public func run() -> RunResult {
+  public func run() throws -> RunResult {
     var optimizationResult = OptimizationResult(
       instructions: self.oldInstructions,
       instructionLines: self.oldInstructionLines,
@@ -66,7 +66,7 @@ public struct PeepholeOptimizer {
       labels: self.oldLabels
     )
 
-    self.applyOptimizations(result: &optimizationResult)
+    try self.applyOptimizations(result: &optimizationResult)
 
     var result = optimizationResult.convertToPeepholeOptimizerResult()
     optimizationResult.dropReferencesToAvoidCOW()
@@ -97,7 +97,7 @@ public struct PeepholeOptimizer {
   // swiftlint:disable function_body_length
 
   /// For-each on instructions and apply optimizations.
-  public func applyOptimizations(result: inout OptimizationResult) {
+  public func applyOptimizations(result: inout OptimizationResult) throws {
     // swiftlint:enable function_body_length
     var instructionIndex: Int? = 0
 
@@ -111,13 +111,13 @@ public struct PeepholeOptimizer {
                                arg: arg)
 
       case let .buildTuple(elementCount: arg):
-        self.optimizeBuildTuple(result: &result,
+        try self.optimizeBuildTuple(result: &result,
                                 buildTuple: instruction,
                                 arg: arg)
 
       case let .jumpIfTrueOrPop(labelIndex: arg),
            let .jumpIfFalseOrPop(labelIndex: arg):
-        if let index = self.optimizeJumpIfOrPop(result: &result,
+        if let index = try self.optimizeJumpIfOrPop(result: &result,
                                                 jumpIfOrPop: instruction,
                                                 arg: arg) {
           instructionIndex = index
@@ -134,7 +134,7 @@ public struct PeepholeOptimizer {
            let .setupFinally(finallyStartLabelIndex: arg),
            let .setupWith(afterBodyLabelIndex: arg):
         // let .setupAsyncWith:
-        self.optimizeJumps(result: &result,
+        try self.optimizeJumps(result: &result,
                            instruction: instruction,
                            arg: arg)
 

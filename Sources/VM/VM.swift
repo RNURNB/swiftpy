@@ -26,7 +26,7 @@ public final class VM {
     )
 
     self.delegate = PyDelegate()
-    self.py = Py(config: config, delegate: self.delegate, fileSystem: self.fileSystem)
+    self.py = try! Py(config: config, delegate: self.delegate, fileSystem: self.fileSystem)
   }
 
   deinit {

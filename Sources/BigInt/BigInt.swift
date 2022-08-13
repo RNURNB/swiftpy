@@ -162,7 +162,7 @@ public struct BigInt: SignedInteger,
       return smi.inverted
     case .heap(var heap):
       // 'heap' is already a copy, so we can modify it without touching the 'value'
-      heap.invert()
+      try! heap.invert()
       return BigInt(heap)
     }
   }
@@ -177,11 +177,11 @@ public struct BigInt: SignedInteger,
     case (.smi(let smi), .heap(var heap)),
          (.heap(var heap), .smi(let smi)):
       // 'heap' is already a copy, so we can modify it without touching the 'value'
-      heap.add(other: smi.value)
+      try! heap.add(other: smi.value)
       return BigInt(heap)
 
     case (.heap(var lhs), .heap(let rhs)):
-      lhs.add(other: rhs)
+      try! lhs.add(other: rhs)
       return BigInt(lhs)
     }
   }
@@ -194,19 +194,19 @@ public struct BigInt: SignedInteger,
 
     case (.smi(let lhsSmi), .heap(var rhs)):
       // Unfortunately in this case we have to copy 'rhs'
-      rhs.add(other: lhsSmi.value)
+      try! rhs.add(other: lhsSmi.value)
       lhs.value = .heap(rhs)
       lhs.downgradeToSmiIfPossible()
 
     case (.heap(var lhsHeap), .smi(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.add(other: rhs.value)
+      try! lhsHeap.add(other: rhs.value)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
 
     case (.heap(var lhsHeap), .heap(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.add(other: rhs)
+      try! lhsHeap.add(other: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
     }
@@ -222,20 +222,20 @@ public struct BigInt: SignedInteger,
     case (.smi(let lhs), .heap(var rhs)):
       // x - y = x + (-y) = (-y) + x
       rhs.negate()
-      rhs.add(other: lhs.value)
+      try! rhs.add(other: lhs.value)
       return BigInt(rhs)
 
     case (.heap(var lhs), .smi(let rhs)):
-      lhs.sub(other: rhs.value)
+      try! lhs.sub(other: rhs.value)
       return BigInt(lhs)
 
     case (.heap(var lhs), .heap(let rhs)):
-      lhs.sub(other: rhs)
+      try! lhs.sub(other: rhs)
       return BigInt(lhs)
     }
   }
 
-  public static func -= (lhs: inout BigInt, rhs: BigInt) {
+  public static func -= (lhs: inout BigInt, rhs: BigInt) throws {
     switch (lhs.value, rhs.value) {
     case let (.smi(lhsSmi), .smi(rhs)):
       let result = lhsSmi.sub(other: rhs)
@@ -245,19 +245,19 @@ public struct BigInt: SignedInteger,
       // Unfortunately in this case we have to copy 'rhs'
       // x - y = x + (-y) = (-y) + x
       rhs.negate()
-      rhs.add(other: lhsSmi.value)
+      try rhs.add(other: lhsSmi.value)
       lhs.value = .heap(rhs)
       lhs.downgradeToSmiIfPossible()
 
     case (.heap(var lhsHeap), .smi(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.sub(other: rhs.value)
+      try lhsHeap.sub(other: rhs.value)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
 
     case (.heap(var lhsHeap), .heap(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.sub(other: rhs)
+      try lhsHeap.sub(other: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
     }
@@ -609,14 +609,14 @@ public struct BigInt: SignedInteger,
 
   // MARK: - Shift left
 
-  public static func << (lhs: BigInt, rhs: BigInt) -> BigInt {
+  public static func << (lhs: BigInt, rhs: BigInt) throws -> BigInt  {
     switch (lhs.value, rhs.value) {
     case let (.smi(lhs), .smi(rhs)):
       return lhs.shiftLeft(count: rhs.value)
 
     case let (.smi(lhsSmi), .heap(rhs)):
       var lhsHeap = BigIntHeap(lhsSmi.value)
-      lhsHeap.shiftLeft(count: rhs)
+      try lhsHeap.shiftLeft(count: rhs)
       return BigInt(lhsHeap)
 
     case (.heap(var lhs), .smi(let rhs)):
@@ -624,7 +624,7 @@ public struct BigInt: SignedInteger,
       return BigInt(lhs)
 
     case (.heap(var lhs), .heap(let rhs)):
-      lhs.shiftLeft(count: rhs)
+      try lhs.shiftLeft(count: rhs)
       return BigInt(lhs)
     }
   }
@@ -639,7 +639,7 @@ public struct BigInt: SignedInteger,
 
     case let (.smi(lhsSmi), .heap(rhs)):
       var lhsHeap = BigIntHeap(lhsSmi.value)
-      lhsHeap.shiftLeft(count: rhs)
+      try! lhsHeap.shiftLeft(count: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
 
@@ -651,7 +651,7 @@ public struct BigInt: SignedInteger,
 
     case (.heap(var lhsHeap), .heap(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.shiftLeft(count: rhs)
+      try! lhsHeap.shiftLeft(count: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
     }
@@ -659,14 +659,14 @@ public struct BigInt: SignedInteger,
 
   // MARK: - Shift right
 
-  public static func >> (lhs: BigInt, rhs: BigInt) -> BigInt {
+  public static func >> (lhs: BigInt, rhs: BigInt) throws -> BigInt {
    switch (lhs.value, rhs.value) {
    case let (.smi(lhs), .smi(rhs)):
      return lhs.shiftRight(count: rhs.value)
 
    case let (.smi(lhsSmi), .heap(rhs)):
      var lhsHeap = BigIntHeap(lhsSmi.value)
-     lhsHeap.shiftRight(count: rhs)
+     try lhsHeap.shiftRight(count: rhs)
      return BigInt(lhsHeap)
 
    case (.heap(var lhs), .smi(let rhs)):
@@ -674,7 +674,7 @@ public struct BigInt: SignedInteger,
      return BigInt(lhs)
 
    case (.heap(var lhs), .heap(let rhs)):
-     lhs.shiftRight(count: rhs)
+     try lhs.shiftRight(count: rhs)
      return BigInt(lhs)
    }
   }
@@ -689,7 +689,7 @@ public struct BigInt: SignedInteger,
 
     case let (.smi(lhsSmi), .heap(rhs)):
       var lhsHeap = BigIntHeap(lhsSmi.value)
-      lhsHeap.shiftRight(count: rhs)
+      try! lhsHeap.shiftRight(count: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
 
@@ -701,7 +701,7 @@ public struct BigInt: SignedInteger,
 
     case (.heap(var lhsHeap), .heap(let rhs)):
       Self.releaseBufferToPreventCOW(&lhs)
-      lhsHeap.shiftRight(count: rhs)
+      try! lhsHeap.shiftRight(count: rhs)
       lhs.value = .heap(lhsHeap)
       lhs.downgradeToSmiIfPossible()
     }

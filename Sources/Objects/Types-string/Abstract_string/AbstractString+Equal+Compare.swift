@@ -151,7 +151,7 @@ extension AbstractString {
     case (_, nil): return .greater // Finished other, self has some remaining
     default:
       // Not possible? See `while` condition.
-      trap("Error when comparing '\(zelf.elements)' and '\(other)'")
+      try! trap("Error when comparing '\(zelf.elements)' and '\(other)'")
     }
   }
 }

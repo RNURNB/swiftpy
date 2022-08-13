@@ -143,7 +143,7 @@ extension PyType {
       // Calculate best base using bases memory layout (layout conflict -> error).
       // We will call this base 'solid' - our new type will have the same memory
       // layout (+- '__dict__' because it does not matter).
-      switch Self.getSolidBase(py, bases: bases) {
+      switch try! Self.getSolidBase(py, bases: bases) {
       case let .value(r): base = r
       case let .error(e): return .error(e)
       }
@@ -305,7 +305,7 @@ extension PyType {
   ///
   /// static PyTypeObject *
   /// best_base(PyObject *bases)
-  private static func getSolidBase(_ py: Py, bases: [PyType]) -> PyResultGen<PyType> {
+  private static func getSolidBase(_ py: Py, bases: [PyType]) throws -> PyResultGen<PyType> {
     assert(bases.any)
 
     var result: PyType?
@@ -336,7 +336,7 @@ extension PyType {
         } else { // resultSize > candidateSize
           let candidateName = base.name
           let resultName = currentResult.name
-          trap("'\(candidateName)' is a subclass of '\(resultName)' but it is smaller?")
+          try trap("'\(candidateName)' is a subclass of '\(resultName)' but it is smaller?")
         }
 
         continue

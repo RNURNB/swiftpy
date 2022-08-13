@@ -29,9 +29,9 @@ extension CompilerImpl {
       self.setAppendLocation(alias)
 
       // The Import node stores a module name like a.b.c as a single string.
-      self.builder.appendInteger(0)
-      self.builder.appendNone()
-      self.builder.appendImportName(name: alias.name)
+      try self.builder.appendInteger(0)
+      try self.builder.appendNone()
+      try self.builder.appendImportName(name: alias.name)
 
       if let asName = alias.asName {
         try self.emitImportAs(name: alias.name, asName: asName)
@@ -41,7 +41,7 @@ extension CompilerImpl {
           name = String(alias.name.prefix(upTo: dotIndex))
         }
 
-        self.builder.appendStoreName(name)
+        try self.builder.appendStoreName(name)
       }
     }
   }
@@ -95,8 +95,8 @@ extension CompilerImpl {
 
       let storeName = alias.asName ?? alias.name
       self.setAppendLocation(alias)
-      self.builder.appendImportFrom(name: alias.name)
-      self.builder.appendStoreName(storeName)
+      try self.builder.appendImportFrom(name: alias.name)
+      try self.builder.appendStoreName(storeName)
     }
 
     self.builder.appendPopTop()
@@ -109,9 +109,9 @@ extension CompilerImpl {
     let importName = module ?? ""
     let nameTuple = names.map { CodeObject.Constant.string($0) }
 
-    self.builder.appendInteger(BigInt(level))
-    self.builder.appendTuple(nameTuple)
-    self.builder.appendImportName(name: importName)
+    try self.builder.appendInteger(BigInt(level))
+    try self.builder.appendTuple(nameTuple)
+    try self.builder.appendImportName(name: importName)
   }
 
   private func checkLateFuture(module: String?, location: SourceLocation) throws {
@@ -134,14 +134,14 @@ extension CompilerImpl {
     let hasAttributes = slices.count > 1
     guard hasAttributes else {
       // for example: import elsa as queen
-      self.builder.appendStoreName(asName)
+      try self.builder.appendStoreName(asName)
       return
     }
 
     // for example: import frozen.elsa as queen ('elsa' is an attribute)
     let attributes = slices[1...]
     for (index, attr) in attributes.enumerated() {
-      self.builder.appendImportFrom(name: String(attr))
+      try self.builder.appendImportFrom(name: String(attr))
 
       let isLast = index == attributes.count - 1
       if !isLast {
@@ -151,7 +151,7 @@ extension CompilerImpl {
     }
 
     // final store using 'asName'
-    self.builder.appendStoreName(asName)
+    try self.builder.appendStoreName(asName)
     self.builder.appendPopTop()
   }
 }

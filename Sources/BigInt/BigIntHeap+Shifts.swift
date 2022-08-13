@@ -87,7 +87,7 @@ extension BigIntHeap {
 
   // MARK: - Left - heap
 
-  internal mutating func shiftLeft(count: BigIntHeap) {
+  internal mutating func shiftLeft(count: BigIntHeap) throws {
     defer { self.checkInvariants() }
 
     if count.isZero {
@@ -99,7 +99,7 @@ extension BigIntHeap {
         // Something is off.
         // We will execute order 66 and kill the jedi before they take control
         // over the whole galaxy (also known as ENOMEM).
-        trap(Self.unreasonableLeftShiftMsg)
+        try trap(Self.unreasonableLeftShiftMsg)
       }
 
       self.shiftLeft(count: word)
@@ -254,7 +254,7 @@ extension BigIntHeap {
 
   // MARK: - Right - heap
 
-  internal mutating func shiftRight(count: BigIntHeap) {
+  internal mutating func shiftRight(count: BigIntHeap) throws {
     defer { self.checkInvariants() }
 
     if count.isZero {
@@ -273,7 +273,7 @@ extension BigIntHeap {
         // Something is off.
         // We will execute order 66 and kill the jedi before they take control
         // over the whole galaxy (also known as ENOMEM).
-        trap(Self.unreasonableLeftShiftMsg)
+        try trap(Self.unreasonableLeftShiftMsg)
       }
 
       self.shiftLeft(count: word)

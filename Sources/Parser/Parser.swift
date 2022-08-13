@@ -131,7 +131,7 @@ public final class Parser {
     let start = self.peek.start
 
     if self.peek.kind == .newLine {
-      return self.builder.interactiveAST(statements: [],
+      return try self.builder.interactiveAST(statements: [],
                                          start: start,
                                          end: self.peek.end)
     }
@@ -141,7 +141,7 @@ public final class Parser {
       try self.consumeNewLines()
       try self.assertEOF(expected: .newLine, .eof)
 
-      return self.builder.interactiveAST(statements: [stmt],
+      return try self.builder.interactiveAST(statements: [stmt],
                                          start: start,
                                          end: self.peek.end)
     }
@@ -149,7 +149,7 @@ public final class Parser {
     let stmts = try self.simpleStmt()
     try self.assertEOF()
 
-    return self.builder.interactiveAST(statements: Array(stmts),
+    return try self.builder.interactiveAST(statements: Array(stmts),
                                        start: start,
                                        end: stmts.last.end)
   }
@@ -173,7 +173,7 @@ public final class Parser {
     // but we can check anyway:
     try self.assertEOF()
 
-    return self.builder.moduleAST(statements: result,
+    return try self.builder.moduleAST(statements: result,
                                   start: first.start,
                                   end: result.last?.end ?? first.end)
   }
@@ -186,8 +186,8 @@ public final class Parser {
     try self.consumeNewLines()
     try self.assertEOF()
 
-    let expr = list.toExpression(using: &self.builder, start: start)
-    return self.builder.expressionAST(expression: expr,
+    let expr = try list.toExpression(using: &self.builder, start: start)
+    return try self.builder.expressionAST(expression: expr,
                                       start: start,
                                       end: self.peek.end)
   }

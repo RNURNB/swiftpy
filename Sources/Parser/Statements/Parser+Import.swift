@@ -51,7 +51,7 @@ extension Parser {
     try self.advance() // import
 
     let names = try self.dottedAsNames()
-    return self.builder.importStmt(names: names,
+    return try self.builder.importStmt(names: names,
                                    start: start,
                                    end: names.last.end)
   }
@@ -76,7 +76,7 @@ extension Parser {
       end = token.end
     }
 
-    return self.builder.alias(name: base.name,
+    return try self.builder.alias(name: base.name,
                               asName: asName,
                               start: base.start,
                               end: end)
@@ -160,12 +160,12 @@ extension Parser {
 
     switch ir.values {
     case .all:
-      return self.builder.importFromStarStmt(moduleName: ir.module,
+      return try self.builder.importFromStarStmt(moduleName: ir.module,
                                              level: ir.level,
                                              start: start,
                                              end: ir.end)
     case let .aliases(aliases):
-      return self.builder.importFromStmt(moduleName: ir.module,
+      return try self.builder.importFromStmt(moduleName: ir.module,
                                          names: aliases,
                                          level: ir.level,
                                          start: start,
@@ -203,7 +203,7 @@ extension Parser {
       switch self.peek.kind {
       case .dot: count += 1
       case .ellipsis: count += 3
-      default: unreachable() // see 'while' condition
+      default: try unreachable() // see 'while' condition
       }
 
       try self.advance() // '.' or '...'
@@ -296,6 +296,6 @@ extension Parser {
       try self.checkForbiddenName(name, location: start)
     }
 
-    return self.builder.alias(name: name, asName: asName, start: start, end: end)
+    return try self.builder.alias(name: name, asName: asName, start: start, end: end)
   }
 }

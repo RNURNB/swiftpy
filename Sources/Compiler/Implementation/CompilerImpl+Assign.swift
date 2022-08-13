@@ -53,10 +53,10 @@ extension CompilerImpl {
   /// ```
   internal func visit(_ node: AugAssignStmt) throws {
     if let identifier = node.target as? IdentifierExpr {
-      self.visitName(name: identifier.value, context: .load)
+      try self.visitName(name: identifier.value, context: .load)
       try self.visit(node.value)
       self.builder.appendInPlaceOperator(node.op)
-      self.visitName(name: identifier.value, context: .store)
+      try self.visitName(name: identifier.value, context: .store)
       return
     }
 
@@ -143,8 +143,8 @@ extension CompilerImpl {
       }
 
       let mangled = self.mangle(name: identifier.value)
-      self.builder.appendLoadName(SpecialIdentifiers.__annotations__)
-      self.builder.appendString(mangled)
+      try self.builder.appendLoadName(SpecialIdentifiers.__annotations__)
+      try self.builder.appendString(mangled)
       self.builder.appendStoreSubscript()
       return
     }

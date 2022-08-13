@@ -37,7 +37,7 @@ extension Parser {
       let end = self.peek.end
       try self.advance() // }
 
-      return self.builder.dictionaryExpr(elements: [],
+      return try self.builder.dictionaryExpr(elements: [],
                                          context: .load,
                                          start: start,
                                          end: end)
@@ -75,7 +75,7 @@ extension Parser {
       let end = self.peek.end
       try self.advance() // }
 
-      return self.builder.setExpr(elements: [first],
+      return try self.builder.setExpr(elements: [first],
                                   context: .load,
                                   start: start,
                                   end: end)
@@ -86,7 +86,7 @@ extension Parser {
       let end = self.peek.end
       try self.consumeOrThrow(.rightBrace)
 
-      return self.builder.setComprehensionExpr(element: first,
+      return try self.builder.setComprehensionExpr(element: first,
                                                generators: generators,
                                                context: .load,
                                                start: start,
@@ -109,7 +109,7 @@ extension Parser {
       let end = self.peek.end
       try self.consumeOrThrow(.rightBrace)
 
-      return self.builder.dictionaryComprehensionExpr(key: first,
+      return try self.builder.dictionaryComprehensionExpr(key: first,
                                                       value: value,
                                                       generators: generators,
                                                       context: .load,
@@ -143,7 +143,7 @@ extension Parser {
     let end = self.peek.end
     try self.consumeOrThrow(closingToken)
 
-    return self.builder.setExpr(elements: elements,
+    return try self.builder.setExpr(elements: elements,
                                 context: .load,
                                 start: start,
                                 end: end)
@@ -178,7 +178,7 @@ extension Parser {
     let end = self.peek.end
     try self.consumeOrThrow(closingToken)
 
-    return self.builder.dictionaryExpr(elements: elements,
+    return try self.builder.dictionaryExpr(elements: elements,
                                        context: .load,
                                        start: start,
                                        end: end)

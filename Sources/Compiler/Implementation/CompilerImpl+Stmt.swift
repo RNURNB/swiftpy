@@ -58,7 +58,7 @@ extension CompilerImpl {
     let cleanup = self.builder.createLabel()
     let end = self.builder.createLabel()
 
-    self.builder.appendSetupLoop(loopEnd: end)
+    try self.builder.appendSetupLoop(loopEnd: end)
 
     // 'continue' will jump to 'startLabel'
     try self.inBlock(.loop(continueTarget: iterationStart)) {
@@ -66,10 +66,10 @@ extension CompilerImpl {
       self.builder.appendGetIter()
 
       self.builder.setLabel(iterationStart)
-      self.builder.appendForIter(ifEmpty: cleanup)
+      try self.builder.appendForIter(ifEmpty: cleanup)
       try self.visit(node.target)
       try self.visit(node.body)
-      self.builder.appendJumpAbsolute(to: iterationStart)
+      try self.builder.appendJumpAbsolute(to: iterationStart)
 
       self.builder.setLabel(cleanup)
       self.builder.appendPopBlock()
@@ -113,14 +113,14 @@ extension CompilerImpl {
     let cleanup = self.builder.createLabel()
     let end = self.builder.createLabel()
 
-    self.builder.appendSetupLoop(loopEnd: end)
+    try self.builder.appendSetupLoop(loopEnd: end)
     self.builder.setLabel(iterationStart)
 
     // 'continue' will jump to 'startLabel'
     try self.inBlock(.loop(continueTarget: iterationStart)) {
       try self.visit(node.test, andJumpTo: cleanup, ifBooleanValueIs: false)
       try self.visit(node.body)
-      self.builder.appendJumpAbsolute(to: iterationStart)
+      try self.builder.appendJumpAbsolute(to: iterationStart)
 
       self.builder.setLabel(cleanup)
       self.builder.appendPopBlock()
@@ -165,7 +165,7 @@ extension CompilerImpl {
     try self.visit(node.body)
 
     if node.orElse.any {
-      self.builder.appendJumpAbsolute(to: end)
+      try self.builder.appendJumpAbsolute(to: end)
       self.builder.setLabel(orElseStart)
       try self.visit(node.orElse)
     }
@@ -233,7 +233,7 @@ extension CompilerImpl {
 
     // Evaluate EXPR
     try self.visit(item.contextExpr)
-    self.builder.appendSetupWith(afterBody: afterBody)
+    try self.builder.appendSetupWith(afterBody: afterBody)
 
     // SETUP_WITH pushes a finally block.
     try self.inBlock(.finallyTry) {
@@ -256,7 +256,7 @@ extension CompilerImpl {
       self.builder.appendPopBlock()
     }
 
-    self.builder.appendNone()
+    try self.builder.appendNone()
     self.builder.setLabel(afterBody)
 
     self.inBlock(.finallyEnd) {
@@ -298,12 +298,12 @@ extension CompilerImpl {
 
     let end = self.builder.createLabel()
     try self.visit(node.test, andJumpTo: end, ifBooleanValueIs: true)
-    self.builder.appendLoadGlobal(SpecialIdentifiers.assertionErrorTypeName)
+    try self.builder.appendLoadGlobal(SpecialIdentifiers.assertionErrorTypeName)
 
     if let message = node.msg {
       // Call 'AssertionError' with single argument
       try self.visit(message)
-      self.builder.appendCallFunction(argumentCount: 1)
+      try self.builder.appendCallFunction(argumentCount: 1)
     }
 
     self.builder.appendRaiseVarargs(arg: .exceptionOnly)
@@ -324,7 +324,7 @@ extension CompilerImpl {
     switch blockType {
     case let .loop(continueTarget):
       // If 'continue' is directly in loop then we can just jump.
-      self.builder.appendJumpAbsolute(to: continueTarget)
+      try self.builder.appendJumpAbsolute(to: continueTarget)
 
     case .except,
          .finallyTry:
@@ -337,7 +337,7 @@ extension CompilerImpl {
           // If 'continue' is nested inside 'except' or 'finally',
           // then we have to unwind that block first.
           // For this we have separate 'continue' instruction.
-          self.builder.appendContinue(loopStartLabel: continueTarget)
+          try self.builder.appendContinue(loopStartLabel: continueTarget)
           return
 
         case .except,
@@ -385,7 +385,7 @@ extension CompilerImpl {
 
       try self.visit(v)
     } else {
-      self.builder.appendNone()
+      try self.builder.appendNone()
     }
 
     self.builder.appendReturn()

@@ -105,6 +105,7 @@ private func register(_ signum: Int32,
   return .unsupportedPlatform
   #endif
 
+/*
   // sigset_t sa_mask
   // This specifies a set of signals to be blocked while the handler runs.
   sigemptyset(&action.sa_mask)
@@ -119,4 +120,5 @@ private func register(_ signum: Int32,
   }
 
   return .ok
+  */
 }

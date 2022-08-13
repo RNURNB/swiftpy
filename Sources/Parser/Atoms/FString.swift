@@ -237,7 +237,7 @@ internal struct FString {
       let ast = try parser.parse()
 
       guard let exprAST = ast as? ExpressionAST else {
-        trap("Parser in 'eval' mode should return expression.")
+        try trap("Parser in 'eval' mode should return expression.")
       }
 
       return exprAST.expression

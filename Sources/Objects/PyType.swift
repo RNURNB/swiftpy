@@ -954,10 +954,10 @@ public struct PyType: PyObjectMixin {
       return Self.invalidZelfArgument(py, _zelf, "__call__")
     }
 
-    return zelf.call(py, args: args, kwargs: kwargs)
+    return try! zelf.call(py, args: args, kwargs: kwargs)
   }
 
-  internal func call(_ py: Py, args: [PyObject], kwargs: PyDict?) -> PyResult {
+  internal func call(_ py: Py, args: [PyObject], kwargs: PyDict?) throws -> PyResult {
     let object: PyObject
     switch self.call__new__(py, args: args, kwargs: kwargs) {
     case let .value(o):

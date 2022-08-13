@@ -45,9 +45,9 @@ extension CompilerImpl {
     }
 
     try self.visit(method.object)
-    self.builder.appendLoadMethod(name: method.name)
+    try self.builder.appendLoadMethod(name: method.name)
     try self.visit(args)
-    self.builder.appendCallMethod(argumentCount: args.count)
+    try self.builder.appendCallMethod(argumentCount: args.count)
     return true
   }
 
@@ -75,7 +75,7 @@ extension CompilerImpl {
       if let star = arg as? StarredExpr {
         // If we've seen positional arguments, then pack them into a tuple.
         if nArgNotPacked > 0 {
-          self.builder.appendBuildTuple(elementCount: nArgNotPacked)
+          try self.builder.appendBuildTuple(elementCount: nArgNotPacked)
           nArgNotPacked = 0
           nPackedArgs += 1
         }
@@ -98,7 +98,7 @@ extension CompilerImpl {
     if nPackedArgs > 0 || hasDictionaryUnpack {
       // Pack up any trailing positional arguments.
       if nArgNotPacked > 0 {
-        self.builder.appendBuildTuple(elementCount: nArgNotPacked)
+        try self.builder.appendBuildTuple(elementCount: nArgNotPacked)
         nArgNotPacked = 0
         nPackedArgs += 1
       }
@@ -108,12 +108,12 @@ extension CompilerImpl {
       // we need to concatenate them into a single sequence.
       if nPackedArgs == 0 {
         // We don't have normal 'args', fake empty.
-        self.builder.appendBuildTuple(elementCount: 0)
+        try self.builder.appendBuildTuple(elementCount: 0)
       } else if nPackedArgs == 1 {
         // Exactly as we need it
       } else {
         // nPackedArgs > 1
-        self.builder.appendBuildTupleUnpackWithCall(elementCount: nPackedArgs)
+        try self.builder.appendBuildTupleUnpackWithCall(elementCount: nPackedArgs)
       }
 
       for (index, keyword) in keywords.enumerated() {
@@ -141,31 +141,31 @@ extension CompilerImpl {
       }
 
       if nPackedKwargs > 1 {
-        self.builder.appendBuildMapUnpackWithCall(elementCount: nPackedKwargs)
+        try self.builder.appendBuildMapUnpackWithCall(elementCount: nPackedKwargs)
       }
 
       self.builder.appendCallFunctionEx(hasKeywordArguments: nPackedKwargs > 0)
     } else if keywords.any {
       // All of the 'keywords' are 'named' (no 'dictionaryUnpack')
-      let names = self.getNames(keywords: keywords)
+      let names = try self.getNames(keywords: keywords)
       let argCount = alreadyPushedArgs + args.count + keywords.count
 
       try self.visitKeywords(keywords: keywords)
-      self.builder.appendTuple(names)
-      self.builder.appendCallFunctionKw(argumentCount: argCount)
+      try self.builder.appendTuple(names)
+      try self.builder.appendCallFunctionKw(argumentCount: argCount)
     } else {
       // Only args, no kwargs
       let argCount = alreadyPushedArgs + args.count
-      self.builder.appendCallFunction(argumentCount: argCount)
+      try self.builder.appendCallFunction(argumentCount: argCount)
     }
   }
 
   /// Precondition: 'hasDictionaryUnpack' = false
-  private func getNames(keywords: [KeywordArgument]) -> [CodeObject.Constant] {
+  private func getNames(keywords: [KeywordArgument]) throws -> [CodeObject.Constant] {
     var result = [CodeObject.Constant]()
     for keyword in keywords {
       switch keyword.kind {
-      case .dictionaryUnpack: unreachable()
+      case .dictionaryUnpack: try unreachable()
       case .named(let name): result.append(.string(name))
       }
     }
@@ -190,25 +190,25 @@ extension CompilerImpl {
       let keyword = keywords.first!
 
       guard case let .named(name) = keyword.kind else {
-        trap("[BUG] Compiler: visitKwargs should not be called for unpack.")
+        try trap("[BUG] Compiler: visitKwargs should not be called for unpack.")
       }
 
-      self.builder.appendString(name)
+      try self.builder.appendString(name)
       try self.visit(keyword.value)
-      self.builder.appendBuildMap(elementCount: 1)
+      try self.builder.appendBuildMap(elementCount: 1)
     } else {
       var names = [CodeObject.Constant]()
       for keyword in keywords {
         guard case let .named(name) = keyword.kind else {
-          trap("[BUG] Compiler: visitKwargs should not be called for unpack.")
+          try trap("[BUG] Compiler: visitKwargs should not be called for unpack.")
         }
 
         try self.visit(keyword.value)
         names.append(.string(name))
       }
 
-      self.builder.appendTuple(names)
-      self.builder.appendBuildConstKeyMap(elementCount: names.count)
+      try self.builder.appendTuple(names)
+      try self.builder.appendBuildConstKeyMap(elementCount: names.count)
     }
   }
 }

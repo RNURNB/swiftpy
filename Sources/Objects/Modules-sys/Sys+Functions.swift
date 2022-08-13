@@ -189,7 +189,7 @@ extension Sys {
     var frame: PyFrame? = initialFrame
     while let f = frame, depth > 0 {
       frame = f.parent
-      depth -= 1
+      try! depth -= 1
     }
 
     guard let result = frame else {
